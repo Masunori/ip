@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Mirai {
     private final Scanner scanner;
     private final String greeting;
     private final String goodbye;
+    private final List<String> storage;
 
     public Mirai() {
         this.scanner = new Scanner(System.in);
@@ -14,16 +17,25 @@ public class Mirai {
         this.goodbye = "    ____________________________________________________________\n" +
                 "     Bye. Mirai hopes to see you again soon!\n" +
                 "    ____________________________________________________________";
+        this.storage = new ArrayList<>();
     }
 
-    private void echo(String text) {
+    private void addToList(String text) {
+        this.storage.add(text);
         System.out.println("    ____________________________________________________________\n" +
-                "     " + text + "\n" +
+                "     added: " + text + "\n" +
                 "    ____________________________________________________________");
     }
 
-    public void startConversation() {
+    private void printStorage() {
+        System.out.println("    ____________________________________________________________");
+        for (int i = 0; i < this.storage.size(); i++) {
+            System.out.println(String.format("     %d. %s", i + 1, this.storage.get(i)));
+        }
+        System.out.println("    ____________________________________________________________");
+    }
 
+    public void startConversation() {
         System.out.println(greeting);
 
         while (true) {
@@ -32,7 +44,12 @@ public class Mirai {
                 System.out.println(goodbye);
                 break;
             }
-            this.echo(command);
+
+            if (command.equals("list")) {
+                this.printStorage();
+            } else {
+                this.addToList(command);
+            }
         }
     }
 
