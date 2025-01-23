@@ -1,3 +1,6 @@
+/**
+ * Encapsulates a task that can be done or not done.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
