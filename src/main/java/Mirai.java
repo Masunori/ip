@@ -22,6 +22,7 @@ public class Mirai {
         this.commandMap = new HashMap<>();
         commandMap.put("bye", args -> endConversation());
         commandMap.put("deadline", this::addDeadline);
+        commandMap.put("delete", args -> deleteTask(Integer.parseInt(args[1]) - 1));
         commandMap.put("help", args -> listAllSupportedCommands());
         commandMap.put("event", this::addEvent);
         commandMap.put("list", args -> printStorage());
@@ -234,6 +235,10 @@ public class Mirai {
         return false;
     }
 
+    /**
+     * List all commands supported by the chatbot, return a signal to continue the conversation loop.
+     * @return the signal to keep/exit the conversation loop
+     */
     private boolean listAllSupportedCommands() {
         System.out.println("    ____________________________________________________________\n" +
                 "     Mirai currently supports the following command");
@@ -243,6 +248,24 @@ public class Mirai {
         }
 
         System.out.println("    ____________________________________________________________");
+        return false;
+    }
+
+    /**
+     * Remove a task at the specified index from the list, return a signal to continue the conversation loop.
+     * @param taskIndex the index of the task
+     * @return the signal to keep/exit the conversation loop
+     */
+    private boolean deleteTask(int taskIndex) {
+        Task task = this.storage.get(taskIndex);
+        this.storage.remove(taskIndex);
+
+        System.out.println("    ____________________________________________________________\n" +
+                "     Noted. I've removed this task:\n" +
+                "       " + task + "\n" +
+                "     " + this.printNumberOfTasks() +
+                "    ____________________________________________________________");
+
         return false;
     }
 
