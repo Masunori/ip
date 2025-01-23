@@ -22,6 +22,7 @@ public class Mirai {
         this.commandMap = new HashMap<>();
         commandMap.put("bye", args -> endConversation());
         commandMap.put("deadline", this::addDeadline);
+        commandMap.put("help", args -> listAllSupportedCommands());
         commandMap.put("event", this::addEvent);
         commandMap.put("list", args -> printStorage());
         commandMap.put("mark", args -> markTask(Integer.parseInt(args[1]) - 1));
@@ -32,7 +33,7 @@ public class Mirai {
     private String printNumberOfTasks() {
         return String.format("Now you have %d task%s in the list.\n",
                 this.storage.size(),
-                this.storage.isEmpty() ? "" : "s");
+                this.storage.size() <= 1 ? "" : "s");
     }
 
     /**
@@ -50,16 +51,24 @@ public class Mirai {
      * @return the signal to keep/exit the conversation loop
      */
     private boolean addToDo(String... command) {
-        String[] descriptionAsArray = Arrays.copyOfRange(command, 1, command.length);
-        String description = String.join(" ", descriptionAsArray);
-        ToDo task = new ToDo(description);
+        if (command.length == 1) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! Mirai does not understand a to-do task with no content...\n" +
+                    "     You can tell Mirai your to-do task by the syntax 'todo [task]'!\n" +
+                    "    ____________________________________________________________");
+        } else {
+            String[] descriptionAsArray = Arrays.copyOfRange(command, 1, command.length);
+            String description = String.join(" ", descriptionAsArray);
+            ToDo task = new ToDo(description);
 
-        this.storage.add(task);
-        System.out.println("    ____________________________________________________________\n" +
-                "     Got it. I've added this task:\n" +
-                "       " + task + "\n" +
-                "     " + this.printNumberOfTasks() +
-                "    ____________________________________________________________");
+            this.storage.add(task);
+            System.out.println("    ____________________________________________________________\n" +
+                    "     Got it. I've added this task:\n" +
+                    "       " + task + "\n" +
+                    "     " + this.printNumberOfTasks() +
+                    "    ____________________________________________________________");
+        }
+
         return false;
     }
 
@@ -69,23 +78,40 @@ public class Mirai {
      * @return the signal to keep/exit the conversation loop
      */
     private boolean addDeadline(String... command) {
-        int byIndex = 1;
+        if (command.length == 1) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! Mirai does not understand a deadline with no content...\n" +
+                    "     You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!\n" +
+                    "    ____________________________________________________________");
+        } else {
+            int byIndex = 1;
 
-        while (!command[byIndex].equals("/by")) {
-            byIndex++;
+            while (byIndex < command.length && !command[byIndex].equals("/by")) {
+                byIndex++;
+            }
+
+            if (byIndex == command.length) {
+                System.out.println("    ____________________________________________________________\n" +
+                        "     OOPS!!! You forgot to add your deadline...\n" +
+                        "     You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!\n" +
+                        "    ____________________________________________________________");
+
+                return false;
+            }
+
+            String description = String.join(" ", Arrays.copyOfRange(command, 1, byIndex));
+            String deadline = String.join(" ", Arrays.copyOfRange(command, byIndex + 1, command.length));
+
+            Deadline task = new Deadline(description, deadline);
+
+            this.storage.add(task);
+            System.out.println("    ____________________________________________________________\n" +
+                    "     Got it. I've added this task:\n" +
+                    "       " + task + "\n" +
+                    "     " + this.printNumberOfTasks() +
+                    "    ____________________________________________________________");
         }
 
-        String description = String.join(" ", Arrays.copyOfRange(command, 1, byIndex));
-        String deadline = String.join(" ", Arrays.copyOfRange(command, byIndex + 1, command.length));
-
-        Deadline task = new Deadline(description, deadline);
-
-        this.storage.add(task);
-        System.out.println("    ____________________________________________________________\n" +
-                "     Got it. I've added this task:\n" +
-                "       " + task + "\n" +
-                "     " + this.printNumberOfTasks() +
-                "    ____________________________________________________________");
         return false;
     }
 
@@ -95,29 +121,55 @@ public class Mirai {
      * @return the signal to keep/exit the conversation loop
      */
     private boolean addEvent(String... command) {
-        int fromIndex = 1;
-        while (!command[fromIndex].equals("/from")) {
-            fromIndex++;
+        if (command.length == 1) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! Mirai does not understand an event with no content...\n" +
+                    "     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!\n" +
+                    "    ____________________________________________________________");
+        } else {
+            int fromIndex = 1;
+            while (fromIndex < command.length && !command[fromIndex].equals("/from")) {
+                fromIndex++;
+            }
+
+            if (fromIndex == command.length) {
+                System.out.println("    ____________________________________________________________\n" +
+                        "     OOPS!!! You forgot to specify your start time...n" +
+                        "     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!\n" +
+                        "    ____________________________________________________________");
+
+                return false;
+            }
+
+            String description = String.join(" ", Arrays.copyOfRange(command, 1, fromIndex));
+
+            int toIndex = fromIndex + 1;
+            while (toIndex < command.length && !command[toIndex].equals("/to")) {
+                toIndex++;
+            }
+
+            if (toIndex == command.length) {
+                System.out.println("    ____________________________________________________________\n" +
+                        "     OOPS!!! You forgot to specify your end time...n" +
+                        "     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!\n" +
+                        "    ____________________________________________________________");
+
+                return false;
+            }
+
+            String startTime = String.join(" ", Arrays.copyOfRange(command, fromIndex + 1, toIndex));
+            String endTime = String.join(" ", Arrays.copyOfRange(command, toIndex + 1, command.length));
+
+            Event task = new Event(description, startTime, endTime);
+
+            this.storage.add(task);
+            System.out.println("    ____________________________________________________________\n" +
+                    "     Got it. I've added this task:\n" +
+                    "       " + task + "\n" +
+                    "     " + this.printNumberOfTasks() +
+                    "    ____________________________________________________________");
         }
 
-        String description = String.join(" ", Arrays.copyOfRange(command, 1, fromIndex));
-
-        int toIndex = fromIndex + 1;
-        while (!command[toIndex].equals("/to")) {
-            toIndex++;
-        }
-
-        String startTime = String.join(" ", Arrays.copyOfRange(command, fromIndex + 1, toIndex));
-        String endTime = String.join(" ", Arrays.copyOfRange(command, toIndex + 1, command.length));
-
-        Event task = new Event(description, startTime, endTime);
-
-        this.storage.add(task);
-        System.out.println("    ____________________________________________________________\n" +
-                "     Got it. I've added this task:\n" +
-                "       " + task + "\n" +
-                "     " + this.printNumberOfTasks() +
-                "    ____________________________________________________________");
         return false;
     }
 
@@ -146,7 +198,7 @@ public class Mirai {
 
         System.out.println("    ____________________________________________________________\n" +
                 "     Nice! I've marked this task as done:\n" +
-                "     " + task + "\n" +
+                "       " + task + "\n" +
                 "    ____________________________________________________________");
 
         return false;
@@ -170,6 +222,31 @@ public class Mirai {
     }
 
     /**
+     * Warn the user that their command is not supported, return a signal to continue the conversation loop.
+     * @return the signal to keep/exit the conversation loop
+     */
+    private boolean handleUnknownCommand() {
+        System.out.println("    ____________________________________________________________\n" +
+                "     OOPS!!! Sorry, Mirai does not understand what you mean...\n" +
+                "     Please type 'help' to know what commands Mirai can understand!\n" +
+                "    ____________________________________________________________");
+
+        return false;
+    }
+
+    private boolean listAllSupportedCommands() {
+        System.out.println("    ____________________________________________________________\n" +
+                "     Mirai currently supports the following command");
+
+        for (String command : this.commandMap.keySet()) {
+            System.out.println("     >> " + command);
+        }
+
+        System.out.println("    ____________________________________________________________");
+        return false;
+    }
+
+    /**
      * Initiate a conversation with the chatbot.
      */
     public void startConversation() {
@@ -183,7 +260,7 @@ public class Mirai {
             if (this.commandMap.containsKey(commandAsArray[0])) {
                 isEnd = this.commandMap.get(commandAsArray[0]).execute(commandAsArray);
             } else {
-//                isEnd = this.addToList(command);
+                isEnd = this.handleUnknownCommand();
             }
         }
     }
