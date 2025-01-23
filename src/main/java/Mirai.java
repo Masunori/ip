@@ -21,9 +21,18 @@ public class Mirai {
 
         this.commandMap = new HashMap<>();
         commandMap.put("bye", args -> endConversation());
+        commandMap.put("deadline", this::addDeadline);
+        commandMap.put("event", this::addEvent);
         commandMap.put("list", args -> printStorage());
         commandMap.put("mark", args -> markTask(Integer.parseInt(args[1]) - 1));
+        commandMap.put("todo", this::addToDo);
         commandMap.put("unmark", args -> unmarkTask(Integer.parseInt(args[1]) - 1));
+    }
+
+    private String printNumberOfTasks() {
+        return String.format("Now you have %d task%s in the list.\n",
+                this.storage.size(),
+                this.storage.isEmpty() ? "" : "s");
     }
 
     /**
@@ -36,15 +45,78 @@ public class Mirai {
     }
 
     /**
-     * Add the task to the list of tasks, return a signal to continue the conversation loop.
-     * @param text The description of the task
+     * Add a to-do type task to the list of tasks, return a signal to continue the conversation loop.
+     * @param command The user's command
      * @return the signal to keep/exit the conversation loop
      */
-    private boolean addToList(String text) {
-        Task task = new Task(text);
+    private boolean addToDo(String... command) {
+        String[] descriptionAsArray = Arrays.copyOfRange(command, 1, command.length);
+        String description = String.join(" ", descriptionAsArray);
+        ToDo task = new ToDo(description);
+
         this.storage.add(task);
         System.out.println("    ____________________________________________________________\n" +
-                "     added: " + task + "\n" +
+                "     Got it. I've added this task:\n" +
+                "       " + task + "\n" +
+                "     " + this.printNumberOfTasks() +
+                "    ____________________________________________________________");
+        return false;
+    }
+
+    /**
+     * Add a deadline type task to the list of tasks, return a signal to continue the conversation loop.
+     * @param command The user's command
+     * @return the signal to keep/exit the conversation loop
+     */
+    private boolean addDeadline(String... command) {
+        int byIndex = 1;
+
+        while (!command[byIndex].equals("/by")) {
+            byIndex++;
+        }
+
+        String description = String.join(" ", Arrays.copyOfRange(command, 1, byIndex));
+        String deadline = String.join(" ", Arrays.copyOfRange(command, byIndex + 1, command.length));
+
+        Deadline task = new Deadline(description, deadline);
+
+        this.storage.add(task);
+        System.out.println("    ____________________________________________________________\n" +
+                "     Got it. I've added this task:\n" +
+                "       " + task + "\n" +
+                "     " + this.printNumberOfTasks() +
+                "    ____________________________________________________________");
+        return false;
+    }
+
+    /**
+     * Add an event type task to the list of tasks, return a signal to continue the conversation loop.
+     * @param command The user's command
+     * @return the signal to keep/exit the conversation loop
+     */
+    private boolean addEvent(String... command) {
+        int fromIndex = 1;
+        while (!command[fromIndex].equals("/from")) {
+            fromIndex++;
+        }
+
+        String description = String.join(" ", Arrays.copyOfRange(command, 1, fromIndex));
+
+        int toIndex = fromIndex + 1;
+        while (!command[toIndex].equals("/to")) {
+            toIndex++;
+        }
+
+        String startTime = String.join(" ", Arrays.copyOfRange(command, fromIndex + 1, toIndex));
+        String endTime = String.join(" ", Arrays.copyOfRange(command, toIndex + 1, command.length));
+
+        Event task = new Event(description, startTime, endTime);
+
+        this.storage.add(task);
+        System.out.println("    ____________________________________________________________\n" +
+                "     Got it. I've added this task:\n" +
+                "       " + task + "\n" +
+                "     " + this.printNumberOfTasks() +
                 "    ____________________________________________________________");
         return false;
     }
@@ -111,7 +183,7 @@ public class Mirai {
             if (this.commandMap.containsKey(commandAsArray[0])) {
                 isEnd = this.commandMap.get(commandAsArray[0]).execute(commandAsArray);
             } else {
-                isEnd = this.addToList(command);
+//                isEnd = this.addToList(command);
             }
         }
     }
