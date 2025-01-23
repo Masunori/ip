@@ -59,5 +59,37 @@
      Now you have 8 tasks in the list.
     ____________________________________________________________
     ____________________________________________________________
+     OOPS!!! Mirai does not understand a to-do task with no content...
+     You can tell Mirai your to-do task by the syntax 'todo [task]'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! Mirai does not understand a deadline with no content...
+     You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! You forgot to add your deadline...
+     You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! Mirai does not understand an event with no content...
+     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! You forgot to specify your start time...
+     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! You forgot to specify your end time...
+     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! You forgot to specify your start time...
+     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!
+    ____________________________________________________________
+    ____________________________________________________________
+     OOPS!!! Sorry, Mirai does not understand what you mean...
+     Please type 'help' to know what commands Mirai can understand!
+    ____________________________________________________________
+    ____________________________________________________________
      Bye. Mirai hopes to see you again soon!
     ____________________________________________________________

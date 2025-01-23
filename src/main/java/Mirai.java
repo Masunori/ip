@@ -134,7 +134,7 @@ public class Mirai {
 
             if (fromIndex == command.length) {
                 System.out.println("    ____________________________________________________________\n" +
-                        "     OOPS!!! You forgot to specify your start time...n" +
+                        "     OOPS!!! You forgot to specify your start time...\n" +
                         "     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!\n" +
                         "    ____________________________________________________________");
 
@@ -150,7 +150,7 @@ public class Mirai {
 
             if (toIndex == command.length) {
                 System.out.println("    ____________________________________________________________\n" +
-                        "     OOPS!!! You forgot to specify your end time...n" +
+                        "     OOPS!!! You forgot to specify your end time...\n" +
                         "     You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!\n" +
                         "    ____________________________________________________________");
 

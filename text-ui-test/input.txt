@@ -9,4 +9,12 @@ list
 deadline return book /by Sunday
 event project meeting /from Mon 2pm /to 4pm
 deadline do homework /by no idea :-p
+todo
+deadline
+deadline retrieve book
+event
+event sleep
+event sleep /from 10pm
+event sleep /to 6am
+print
 bye
