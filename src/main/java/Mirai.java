@@ -1,23 +1,49 @@
-import java.util.*;
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.ToDo;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Arrays;
 
 public class Mirai {
+    /** A scanner to continuously parse user input */
     private final Scanner scanner;
-    private final String greeting;
-    private final String goodbye;
-    private final List<Task> storage;
 
+    /** The message the user will see upon initializing a conversation */
+    private static final String greeting = "    ____________________________________________________________\n" +
+            "     Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n" +
+            "     As a small token of appreciation, I have created a file to store your current tasks!\n" +
+            "     You can access it at 'ip/data/mirai.txt'.\n" +
+            "     Now then, what can I do for you?\n" +
+            "    ____________________________________________________________";
+
+    /** The message the user will see upon ending the conversation */
+    private static final String goodbye = "    ____________________________________________________________\n" +
+            "     Bye. Mirai hopes to see you again soon!\n" +
+            "    ____________________________________________________________";
+
+    /** The list of tasks of the user. */
+    private final List<Task> taskList;
+
+    /** A map to map user commands to specific actions of the chatbot */
     private final Map<String, Command> commandMap;
+
+    /** The file to store all user's tasks, which is at the address 'ip/data/mirai.txt'.<br>
+     * When the user initiates a conversation, this file (and the folder) will be silently generated. */
+    private File taskFile;
 
     public Mirai() {
         this.scanner = new Scanner(System.in);
-        this.greeting = "    ____________________________________________________________\n" +
-                "     Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n" +
-                "     What can I do for you?\n" +
-                "    ____________________________________________________________";
-        this.goodbye = "    ____________________________________________________________\n" +
-                "     Bye. Mirai hopes to see you again soon!\n" +
-                "    ____________________________________________________________";
-        this.storage = new ArrayList<>();
+        this.taskList = new ArrayList<>();
 
         this.commandMap = new HashMap<>();
         commandMap.put("bye", args -> endConversation());
@@ -31,14 +57,58 @@ public class Mirai {
         commandMap.put("unmark", args -> unmarkTask(Integer.parseInt(args[1]) - 1));
     }
 
+    /**
+     * Adds a task to the task list and logs it into a file with the address './data/mirai.txt'.<br>
+     * This method will silently create the required directory and file if they do not exist.
+     *
+     * @param task The task to be added and logged.
+     */
+    private void addAndLogTask(Task task) {
+        this.taskList.add(task);
+
+        try (FileWriter writer = new FileWriter(this.taskFile, true)) {
+            writer.write(task.toNoteForm() + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Re-logs all tasks into the file at the address './data/mirai.txt'.<br>
+     * This method will silently create the required directory and file if they do not exist.
+     */
+    private void relogTasks() {
+        // delete all file content
+        try (FileWriter contentDeleter = new FileWriter(this.taskFile)) {
+            contentDeleter.write("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // rewrite all tasks into the file
+        try (FileWriter writer = new FileWriter(this.taskFile)) {
+            for (Task task : this.taskList) {
+                writer.write(task.toNoteForm() + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Returns a user-readable string that informs the user the number of tasks in the list.
+     *
+     * @return a string informing the user about the number of tasks in the list
+     */
     private String printNumberOfTasks() {
         return String.format("Now you have %d task%s in the list.\n",
-                this.storage.size(),
-                this.storage.size() <= 1 ? "" : "s");
+                this.taskList.size(),
+                this.taskList.size() <= 1 ? "" : "s");
     }
 
     /**
      * Ends the conversation, return a signal to exit the conversation loop.
+     *
      * @return the signal to keep/exit the conversation loop
      */
     private boolean endConversation() {
@@ -47,7 +117,8 @@ public class Mirai {
     }
 
     /**
-     * Add a to-do type task to the list of tasks, return a signal to continue the conversation loop.
+     * Adds a to-do type task to the list of tasks, return a signal to continue the conversation loop.
+     *
      * @param command The user's command
      * @return the signal to keep/exit the conversation loop
      */
@@ -62,7 +133,7 @@ public class Mirai {
             String description = String.join(" ", descriptionAsArray);
             ToDo task = new ToDo(description);
 
-            this.storage.add(task);
+            this.addAndLogTask(task);
             System.out.println("    ____________________________________________________________\n" +
                     "     Got it. I've added this task:\n" +
                     "       " + task + "\n" +
@@ -74,7 +145,7 @@ public class Mirai {
     }
 
     /**
-     * Add a deadline type task to the list of tasks, return a signal to continue the conversation loop.
+     * Adds a deadline type task to the list of tasks, return a signal to continue the conversation loop.
      * @param command The user's command
      * @return the signal to keep/exit the conversation loop
      */
@@ -105,7 +176,7 @@ public class Mirai {
 
             Deadline task = new Deadline(description, deadline);
 
-            this.storage.add(task);
+            this.addAndLogTask(task);
             System.out.println("    ____________________________________________________________\n" +
                     "     Got it. I've added this task:\n" +
                     "       " + task + "\n" +
@@ -117,7 +188,7 @@ public class Mirai {
     }
 
     /**
-     * Add an event type task to the list of tasks, return a signal to continue the conversation loop.
+     * Adds an event type task to the list of tasks, return a signal to continue the conversation loop.
      * @param command The user's command
      * @return the signal to keep/exit the conversation loop
      */
@@ -163,7 +234,7 @@ public class Mirai {
 
             Event task = new Event(description, startTime, endTime);
 
-            this.storage.add(task);
+            this.addAndLogTask(task);
             System.out.println("    ____________________________________________________________\n" +
                     "     Got it. I've added this task:\n" +
                     "       " + task + "\n" +
@@ -175,27 +246,48 @@ public class Mirai {
     }
 
     /**
-     * List all tasks stored, return a signal to continue the conversation loop.
+     * Lists all tasks stored, return a signal to continue the conversation loop.
      * @return the signal to keep/exit the conversation loop
      */
     private boolean printStorage() {
         System.out.println("    ____________________________________________________________");
         System.out.println("     Here are the tasks in your list:");
-        for (int i = 0; i < this.storage.size(); i++) {
-            System.out.println(String.format("     %d.%s", i + 1, this.storage.get(i)));
+        for (int i = 0; i < this.taskList.size(); i++) {
+            System.out.println(String.format("     %d.%s", i + 1, this.taskList.get(i)));
         }
         System.out.println("    ____________________________________________________________");
         return false;
     }
 
     /**
-     * Mark a task with a specified index as done, return a signal to continue the conversation loop.
+     * Marks a task with a specified index as done, return a signal to continue the conversation loop.
      * @param taskIndex The index of the task
      * @return the signal to keep/exit the conversation loop
      */
     private boolean markTask(int taskIndex) {
-        Task task = this.storage.get(taskIndex);
+        if (taskIndex < 0) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a non-positive index...\n" +
+                    "     Mirai stores your tasks with positive indexes. Please specify a positive index!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        if (taskIndex >= this.taskList.size()) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a too large index...\n" +
+                    "     You are only having " + this.taskList.size() +
+                    " tasks in your list. Please specify an index smaller than this!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        Task task = this.taskList.get(taskIndex);
         task.markAsDone();
+
+        this.relogTasks();
 
         System.out.println("    ____________________________________________________________\n" +
                 "     Nice! I've marked this task as done:\n" +
@@ -206,13 +298,34 @@ public class Mirai {
     }
 
     /**
-     * Mark a task with a specified index as undone, return a signal to continue the conversation loop.
+     * Marks a task with a specified index as undone, return a signal to continue the conversation loop.
      * @param taskIndex The index of the task
      * @return the signal to keep/exit the conversation loop
      */
     private boolean unmarkTask(int taskIndex) {
-        Task task = this.storage.get(taskIndex);
+        if (taskIndex < 0) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a non-positive index...\n" +
+                    "     Mirai stores your tasks with positive indexes. Please specify a positive index!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        if (taskIndex >= this.taskList.size()) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a too large index...\n" +
+                    "     You are only having " + this.taskList.size() +
+                    " tasks in your list. Please specify an index smaller than this!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        Task task = this.taskList.get(taskIndex);
         task.markAsUndone();
+
+        this.relogTasks();
 
         System.out.println("    ____________________________________________________________\n" +
                 "     OK, I've marked this task as not done yet:\n" +
@@ -223,7 +336,7 @@ public class Mirai {
     }
 
     /**
-     * Warn the user that their command is not supported, return a signal to continue the conversation loop.
+     * Warns the user that their command is not supported, return a signal to continue the conversation loop.
      * @return the signal to keep/exit the conversation loop
      */
     private boolean handleUnknownCommand() {
@@ -236,7 +349,7 @@ public class Mirai {
     }
 
     /**
-     * List all commands supported by the chatbot, return a signal to continue the conversation loop.
+     * Lists all commands supported by the chatbot, return a signal to continue the conversation loop.
      * @return the signal to keep/exit the conversation loop
      */
     private boolean listAllSupportedCommands() {
@@ -252,13 +365,34 @@ public class Mirai {
     }
 
     /**
-     * Remove a task at the specified index from the list, return a signal to continue the conversation loop.
+     * Removes a task at the specified index from the list, return a signal to continue the conversation loop.
      * @param taskIndex the index of the task
      * @return the signal to keep/exit the conversation loop
      */
     private boolean deleteTask(int taskIndex) {
-        Task task = this.storage.get(taskIndex);
-        this.storage.remove(taskIndex);
+        if (taskIndex < 0) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a non-positive index...\n" +
+                    "     Mirai stores your tasks with positive indexes. Please specify a positive index!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        if (taskIndex >= this.taskList.size()) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! It looks like you have keyed in a too large index...\n" +
+                    "     You are only having " + this.taskList.size() +
+                    " tasks in your list. Please specify an index smaller than this!\n" +
+                    "    ____________________________________________________________");
+
+            return false;
+        }
+
+        Task task = this.taskList.get(taskIndex);
+        this.taskList.remove(taskIndex);
+
+        this.relogTasks();
 
         System.out.println("    ____________________________________________________________\n" +
                 "     Noted. I've removed this task:\n" +
@@ -270,9 +404,20 @@ public class Mirai {
     }
 
     /**
-     * Initiate a conversation with the chatbot.
+     * Initiates a conversation with the chatbot.
      */
     public void startConversation() {
+        this.taskFile = new File("./data/mirai.txt");
+        this.taskFile.getParentFile().mkdirs();
+        try {
+            this.taskFile.createNewFile();
+        } catch (IOException e) {
+            System.out.println("    ____________________________________________________________\n" +
+                    "     OOPS!!! Mirai cannot create a file to store your tasks...\n" +
+                    "    ____________________________________________________________");
+            e.printStackTrace();
+        }
+
         System.out.println(greeting);
         boolean isEnd = false;
 

@@ -13,7 +13,10 @@ src/main/resources/docs/
 *.iml
 bin/
 
+# Test folder and data
 text-ui-test/
+/data/
 
 # Executable
 src/main/java/*.class
+

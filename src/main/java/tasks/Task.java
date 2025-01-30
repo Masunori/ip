@@ -1,3 +1,5 @@
+package tasks;
+
 /**
  * Encapsulates a task that can be done or not done.
  */
