@@ -82,4 +82,21 @@ public class TaskList {
     public Task getTask(int index) {
         return this.taskList.get(index);
     }
+
+    /**
+     * Returns a TaskList only including tasks that contain a certain string.
+     * @param keyword the string to check for containment
+     * @return a TaskList of tasks with the string
+     */
+    public TaskList filterBasedOnKeyword(String keyword) {
+        TaskList results = new TaskList();
+
+        for (Task task : this.taskList) {
+            if (task.contains(keyword)) {
+                results.addTask(task);
+            }
+        }
+
+        return results;
+    }
 }

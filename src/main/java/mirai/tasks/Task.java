@@ -44,6 +44,15 @@ public abstract class Task {
     }
 
     /**
+     * Checks if the task description contains a certain string.
+     * @param keyword The string to check for containment
+     * @return <code>true</code> if the task description contains the keyword, <code>false</code> otherwise
+     */
+    public boolean contains(String keyword) {
+        return this.description.contains(keyword);
+    }
+
+    /**
      * Converts the task into a note form to store in a file.
      * @return A string representation of the task, store-able in a file
      */
