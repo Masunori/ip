@@ -1,9 +1,9 @@
-package utility;
+package mirai.utility;
 
-import tasks.Deadline;
-import tasks.Event;
-import tasks.Task;
-import tasks.ToDo;
+import mirai.tasks.Deadline;
+import mirai.tasks.Event;
+import mirai.tasks.Task;
+import mirai.tasks.ToDo;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,8 +24,8 @@ public class Storage {
     }
 
     /**
-     * Loads the tasks from the file whose path is specified during initialization.
-     * @return a list containing the tasks
+     * Loads the mirai.tasks from the file whose path is specified during initialization.
+     * @return a list containing the mirai.tasks
      * @throws IOException if an I/O error occurred during the file creation.
      */
     public List<Task> load() throws IOException {
@@ -83,9 +83,9 @@ public class Storage {
     }
 
     /**
-     * Overwrites the storage file using a new list of tasks.
+     * Overwrites the storage file using a new list of mirai.tasks.
      *
-     * @param tasks the list of tasks to be used for overwriting
+     * @param tasks the list of mirai.tasks to be used for overwriting
      */
     public void relogAllTasks(List<Task> tasks) {
         // delete all content from the old file
@@ -95,7 +95,7 @@ public class Storage {
             e.printStackTrace();
         }
 
-        // add content from the new list of tasks
+        // add content from the new list of mirai.tasks
         try (FileWriter writer = new FileWriter(this.file, true)) {
             for (Task task : tasks) {
                 writer.write(task.toNoteForm() + "\n");

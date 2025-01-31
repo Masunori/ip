@@ -1,4 +1,4 @@
-package tasks;
+package mirai.tasks;
 
 /**
  * Encapsulates a task without any date/time attached.

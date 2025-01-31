@@ -1,8 +1,10 @@
-import utility.Command;
-import utility.Parser;
-import utility.Storage;
-import utility.TaskList;
-import utility.Ui;
+package mirai.ui;
+
+import mirai.utility.Command;
+import mirai.utility.Parser;
+import mirai.utility.Storage;
+import mirai.utility.TaskList;
+import mirai.utility.Ui;
 
 public class Mirai {
     private final Storage storage;

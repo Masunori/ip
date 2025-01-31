@@ -1,16 +1,15 @@
-package utility;
+package mirai.utility;
 
-import tasks.Deadline;
-import tasks.Event;
-import tasks.Task;
-import tasks.ToDo;
+import mirai.tasks.Deadline;
+import mirai.tasks.Event;
+import mirai.tasks.Task;
+import mirai.tasks.ToDo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class Parser {
     /**
      * Ends the conversation.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to end the conversation
@@ -50,9 +49,9 @@ public class Parser {
     }
 
     /**
-     * Adds a ToDo task to the list of tasks.
+     * Adds a ToDo task to the list of mirai.tasks.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -95,9 +94,9 @@ public class Parser {
     }
 
     /**
-     * Adds a Deadline task to the list of tasks.
+     * Adds a Deadline task to the list of mirai.tasks.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -162,9 +161,9 @@ public class Parser {
     }
 
     /**
-     * Adds an Event task to the list of tasks.
+     * Adds an Event task to the list of mirai.tasks.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -272,9 +271,9 @@ public class Parser {
     }
 
     /**
-     * Lists all tasks to the user.
+     * Lists all mirai.tasks to the user.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -282,7 +281,7 @@ public class Parser {
     private boolean listAllTasks(String[] args, TaskList tasks, Ui ui, Storage storage) {
         String[] taskStrings = new String[tasks.getSize() + 1];
 
-        taskStrings[0] = "Here are the tasks in your list:";
+        taskStrings[0] = "Here are the mirai.tasks in your list:";
         for (int i = 0; i < tasks.getSize(); i++) {
             taskStrings[i + 1] = (i + 1) + "." + tasks.getTask(i).toString();
         }
@@ -294,7 +293,7 @@ public class Parser {
     /**
      * Marks a task as done.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -305,7 +304,7 @@ public class Parser {
         if (taskIndex < 1) {
             ui.printError(
                     "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
+                    "Mirai stores your mirai.tasks with positive indexes. Please specify a positive index!"
             );
             return true;
         }
@@ -314,7 +313,7 @@ public class Parser {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
                     "You are only having " + tasks.getSize() +
-                            " tasks in your list. Please specify an index smaller than this!"
+                            " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }
@@ -333,7 +332,7 @@ public class Parser {
     /**
      * Marks a task as not done.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -344,7 +343,7 @@ public class Parser {
         if (taskIndex < 1) {
             ui.printError(
                     "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
+                    "Mirai stores your mirai.tasks with positive indexes. Please specify a positive index!"
             );
             return true;
         }
@@ -353,7 +352,7 @@ public class Parser {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
                     "You are only having " + tasks.getSize() +
-                            " tasks in your list. Please specify an index smaller than this!"
+                            " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }
@@ -372,7 +371,7 @@ public class Parser {
     /**
      * Informs the user that the command is undefined.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -389,7 +388,7 @@ public class Parser {
     /**
      * Lists all commands supported by the chatbot.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -410,7 +409,7 @@ public class Parser {
     /**
      * Removes a task at the specified index.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -421,7 +420,7 @@ public class Parser {
         if (taskIndex < 1) {
             ui.printError(
                     "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
+                    "Mirai stores your mirai.tasks with positive indexes. Please specify a positive index!"
             );
             return true;
         }
@@ -430,7 +429,7 @@ public class Parser {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
                     "You are only having " + tasks.getSize() +
-                            " tasks in your list. Please specify an index smaller than this!"
+                            " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }

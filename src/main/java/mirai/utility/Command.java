@@ -1,8 +1,4 @@
-package utility;
-
-import utility.Storage;
-import utility.TaskList;
-import utility.Ui;
+package mirai.utility;
 
 /**
  * The Command interface encapsulates a user command.<br><br>
@@ -13,9 +9,9 @@ import utility.Ui;
 @FunctionalInterface
 public interface Command {
     /**
-     * Executes the command. The execution can interact with the list of tasks, the UI, and the storage.
+     * Executes the command. The execution can interact with the list of mirai.tasks, the UI, and the storage.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of tasks
+     * @param tasks The list of mirai.tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal, where <code>true</code> means to continue the conversation,

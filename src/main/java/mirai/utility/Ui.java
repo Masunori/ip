@@ -1,4 +1,4 @@
-package utility;
+package mirai.utility;
 
 import java.util.Scanner;
 
@@ -55,8 +55,8 @@ public class Ui {
     }
 
     /**
-     * Returns a string to tell the user the number of tasks in the task list.
-     * @param numberOfTasks The number of tasks
+     * Returns a string to tell the user the number of mirai.tasks in the task list.
+     * @param numberOfTasks The number of mirai.tasks
      * @return a string
      */
     public String getNumberOfTasksString(int numberOfTasks) {

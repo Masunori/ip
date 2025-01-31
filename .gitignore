@@ -18,8 +18,6 @@ text-ui-test/
 /data/
 
 # Executable
-src/main/java/*.class
-
 /src/main/java/mirai/tasks/*.class
 /src/main/java/mirai/ui/Mirai.class
 /src/main/java/mirai/utility/*.class
