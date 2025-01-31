@@ -33,8 +33,9 @@ application {
 }
 
 shadowJar {
-    archiveBaseName = "duke"
+    archiveBaseName = "mirai"
     archiveClassifier = null
+    archiveFileName = 'mirai.jar'
 }
 
 run {
