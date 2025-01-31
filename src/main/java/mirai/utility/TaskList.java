@@ -6,7 +6,7 @@ import java.util.List;
 import mirai.tasks.Task;
 
 /**
- * The TaskList class encapsulates a list of mirai.tasks.
+ * The TaskList class encapsulates a list of tasks.
  */
 public class TaskList {
     private final List<Task> taskList;
@@ -27,7 +27,7 @@ public class TaskList {
     }
 
     /**
-     * Adds a task to the list of mirai.tasks.
+     * Adds a task to the list of tasks.
      * @param task The task to be added
      */
     public void addTask(Task task) {
@@ -59,16 +59,16 @@ public class TaskList {
     }
 
     /**
-     * Returns the number of mirai.tasks currently stored in this task list.
-     * @return the number of mirai.tasks
+     * Returns the number of tasks currently stored in this task list.
+     * @return the number of tasks
      */
     public int getSize() {
         return this.taskList.size();
     }
 
     /**
-     * Returns the list of mirai.tasks using Java's List.
-     * @return the list of mirai.tasks
+     * Returns the list of tasks using Java's List.
+     * @return the list of tasks
      */
     public List<Task> getTaskList() {
         return new ArrayList<>(this.taskList);
