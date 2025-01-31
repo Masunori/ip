@@ -1,9 +1,7 @@
-package tasks;
+package mirai.tasks;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Encapsulates a task with a deadline.
