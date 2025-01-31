@@ -6,12 +6,19 @@ import mirai.utility.Storage;
 import mirai.utility.TaskList;
 import mirai.utility.Ui;
 
+/**
+ * The Mirai class encapsulates a chatbot named Mirai.
+ */
 public class Mirai {
     private final Storage storage;
     private TaskList tasks;
     private final Ui ui;
     private final Parser parser;
 
+    /**
+     * Initialises the chatbot.
+     * @param filePath The path of the file to store the list of tasks. If the file does not exist, silently create one.
+     */
     public Mirai(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);

@@ -4,6 +4,10 @@ package mirai.tasks;
  * Encapsulates a task without any date/time attached.
  */
 public class ToDo extends Task {
+    /**
+     * Initialises a task to be done.
+     * @param description The to-do task description
+     */
     public ToDo(String description) {
         super(description);
     }

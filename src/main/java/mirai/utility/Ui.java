@@ -2,16 +2,22 @@ package mirai.utility;
 
 import java.util.Scanner;
 
+/**
+ * The Ui class encapsulates the user interface. The user interacts with the chatbot only at this point.
+ */
 public class Ui {
     private final Scanner scanner;
 
     /** The message the user will see upon initializing a conversation */
-    private final String greeting = "     Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n" +
-            "     Now then, what can I do for you?";
+    private final String greeting = "     Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n"
+            + "     Now then, what can I do for you?";
 
     /** The message the user will see upon ending the conversation */
     private final String goodbye = "     Bye. Mirai hopes to see you again soon!";
 
+    /**
+     * Initialises a user interface.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
@@ -95,6 +101,9 @@ public class Ui {
         this.printLine();
     }
 
+    /**
+     * Displays to the user the list of supported date-time formats for date-related commands.
+     */
     public void printSupportedDateTimeFormats() {
         this.printResponse(
                 "Mirai supports the following date-time formats:",

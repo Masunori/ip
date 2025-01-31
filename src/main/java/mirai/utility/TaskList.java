@@ -1,9 +1,9 @@
 package mirai.utility;
 
-import mirai.tasks.Task;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import mirai.tasks.Task;
 
 /**
  * The TaskList class encapsulates a list of mirai.tasks.
@@ -11,10 +11,17 @@ import java.util.List;
 public class TaskList {
     private final List<Task> taskList;
 
+    /**
+     * Initialises a new list of tasks.
+     */
     public TaskList() {
         this.taskList = new ArrayList<>();
     }
 
+    /**
+     * Initialises a list of tasks from another list.
+     * @param taskList the list of tasks to reference from
+     */
     public TaskList(List<Task> taskList) {
         this.taskList = new ArrayList<>(taskList);
     }

@@ -1,10 +1,5 @@
 package mirai.utility;
 
-import mirai.tasks.Deadline;
-import mirai.tasks.Event;
-import mirai.tasks.Task;
-import mirai.tasks.ToDo;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -14,6 +9,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import mirai.tasks.Deadline;
+import mirai.tasks.Event;
+import mirai.tasks.Task;
+import mirai.tasks.ToDo;
+
 /**
  * The Parser class encapsulates a parser to interpret the user's command lines.
  */
@@ -21,6 +21,9 @@ public class Parser {
     /** A map to map user commands to specific actions of the chatbot */
     private final Map<String, Command> commandMap;
 
+    /**
+     * Initialises a parser.
+     */
     public Parser() {
         this.commandMap = new HashMap<>();
         commandMap.put("bye", this::endConversation);
@@ -77,6 +80,11 @@ public class Parser {
         return true;
     }
 
+    /**
+     * Parses a user's date-time string.
+     * @param dateTime The user's date-time string
+     * @return a LocalDateTime representation of the user's date-time
+     */
     public static LocalDateTime parseUserDateTime(String dateTime) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm")) // 31/01/2025 1559
@@ -271,9 +279,9 @@ public class Parser {
     }
 
     /**
-     * Lists all mirai.tasks to the user.
+     * Lists all tasks to the user.
      * @param args The user command, which is already split (by space) into an array
-     * @param tasks The list of mirai.tasks
+     * @param tasks The list of tasks
      * @param ui The user interface
      * @param storage The task storage
      * @return a boolean signal to continue the conversation
@@ -281,7 +289,7 @@ public class Parser {
     private boolean listAllTasks(String[] args, TaskList tasks, Ui ui, Storage storage) {
         String[] taskStrings = new String[tasks.getSize() + 1];
 
-        taskStrings[0] = "Here are the mirai.tasks in your list:";
+        taskStrings[0] = "Here are the tasks in your list:";
         for (int i = 0; i < tasks.getSize(); i++) {
             taskStrings[i + 1] = (i + 1) + "." + tasks.getTask(i).toString();
         }
@@ -312,8 +320,8 @@ public class Parser {
         if (taskIndex > tasks.getSize()) {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize() +
-                            " mirai.tasks in your list. Please specify an index smaller than this!"
+                    "You are only having " + tasks.getSize()
+                            + " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }
@@ -351,8 +359,8 @@ public class Parser {
         if (taskIndex > tasks.getSize()) {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize() +
-                            " mirai.tasks in your list. Please specify an index smaller than this!"
+                    "You are only having " + tasks.getSize()
+                            + " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }
@@ -428,8 +436,8 @@ public class Parser {
         if (taskIndex > tasks.getSize()) {
             ui.printError(
                     "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize() +
-                            " mirai.tasks in your list. Please specify an index smaller than this!"
+                    "You are only having " + tasks.getSize()
+                            + " mirai.tasks in your list. Please specify an index smaller than this!"
             );
             return true;
         }
