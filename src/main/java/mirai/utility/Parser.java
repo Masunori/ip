@@ -30,6 +30,7 @@ public class Parser {
         commandMap.put("deadline", this::addDeadline);
         commandMap.put("delete", this::deleteTask);
         commandMap.put("event", this::addEvent);
+        commandMap.put("find", this::findTasks);
         commandMap.put("help", this::listAllSupportedCommands);
         commandMap.put("list", this::listAllTasks);
         commandMap.put("mark", this::markTask);
@@ -93,9 +94,6 @@ public class Parser {
                 .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")) // 31/01/25 15:59
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm")) // 2025-01-31 1559
                 .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) // 2025-01-31 15:59
-                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy")) // 31/01/2025
-                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yy")) // 31/01/25
-                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 2025-01-31
                 .toFormatter(Locale.ENGLISH);
 
         return LocalDateTime.parse(dateTime, formatter);
@@ -156,11 +154,7 @@ public class Parser {
                         ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
                         ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
                         ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
-                        "Note that if time is not provided, Mirai will assume 00:00!"
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
                 );
             }
         }
@@ -230,11 +224,7 @@ public class Parser {
                         ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
                         ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
                         ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
-                        "Note that if time is not provided, Mirai will assume 00:00!"
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
                 );
 
                 return true;
@@ -253,11 +243,7 @@ public class Parser {
                         ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
                         ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
                         ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> DD/MM/YY, such as 31/01/25",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
-                        "Note that if time is not provided, Mirai will assume 00:00!"
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
                 );
 
                 return true;
@@ -452,6 +438,28 @@ public class Parser {
                 ui.getNumberOfTasksString(tasks.getSize())
         );
 
+        return true;
+    }
+
+    /**
+     * Displays to the user all tasks matching a given keyword.
+     * @param args The user command, which is already split (by space) into an array
+     * @param tasks The list of mirai.tasks
+     * @param ui The user interface
+     * @param storage The task storage
+     * @return a boolean signal to continue the conversation
+     */
+    public boolean findTasks(String[] args, TaskList tasks, Ui ui, Storage storage) {
+        String keyword = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
+        TaskList filteredTaskList = tasks.filterBasedOnKeyword(keyword);
+        String[] taskStrings = new String[filteredTaskList.getSize() + 1];
+        taskStrings[0] = "Here are the matching tasks in your list:";
+        for (int i = 0; i < filteredTaskList.getSize(); i++) {
+            taskStrings[i + 1] = (i + 1) + "." + filteredTaskList.getTask(i).toString();
+        }
+
+        ui.printResponse(taskStrings);
         return true;
     }
 
