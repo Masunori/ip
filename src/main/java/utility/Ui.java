@@ -94,4 +94,20 @@ public class Ui {
         }
         this.printLine();
     }
+
+    public void printSupportedDateTimeFormats() {
+        this.printResponse(
+                "Mirai supports the following date-time formats:",
+                ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
+                ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
+                ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
+                ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
+                ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
+                ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
+                ">>> DD/MM/YY, such as 31/01/25",
+                ">>> DD/MM/YY, such as 31/01/25",
+                ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
+                "Note that if time is not provided, Mirai will assume 00:00!"
+        );
+    }
 }

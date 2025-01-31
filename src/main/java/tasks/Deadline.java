@@ -1,19 +1,26 @@
 package tasks;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Encapsulates a task with a deadline.
  */
 public class Deadline extends Task {
-    protected String deadline;
+    protected LocalDateTime deadline;
 
-    public Deadline(String description, String deadline) {
+    public Deadline(String description, LocalDateTime deadline) {
         super(description);
         this.deadline = deadline;
     }
 
     @Override
     public String toString() {
-        return String.format("[D]%s (by: %s)", super.toString(), this.deadline);
+        return String.format("[D]%s (by: %s)",
+                super.toString(),
+                this.deadline.format(DateTimeFormatter.ofPattern("MMM dd YYYY, HHmm")));
     }
 
     @Override

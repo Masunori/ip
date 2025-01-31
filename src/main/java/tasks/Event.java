@@ -1,13 +1,16 @@
 package tasks;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 /**
  * Encapsulates a task that starts at a specific date/time and ends at a specific date/time.
  */
 public class Event extends Task {
-    protected String startTime;
-    protected String endTime;
+    protected LocalDateTime startTime;
+    protected LocalDateTime endTime;
 
-    public Event(String description, String startTime, String endTime) {
+    public Event(String description, LocalDateTime startTime, LocalDateTime endTime) {
         super(description);
         this.startTime = startTime;
         this.endTime = endTime;
@@ -15,7 +18,10 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return String.format("[E]%s (from: %s to: %s)", super.toString(), this.startTime, this.endTime);
+        return String.format("[E]%s (from: %s to: %s)",
+                super.toString(),
+                this.startTime.format(DateTimeFormatter.ofPattern("MMM dd YYYY, HHmm")),
+                this.endTime.format(DateTimeFormatter.ofPattern("MMM dd YYYY, HHmm")));
     }
 
     @Override

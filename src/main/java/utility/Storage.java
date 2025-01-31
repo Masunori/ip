@@ -8,6 +8,7 @@ import tasks.ToDo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -46,14 +47,17 @@ public class Storage {
                     taskList.add(toDoTask);
                 }
                 case "D" -> {
-                    Task deadlineTask = new Deadline(taskContent[2], taskContent[3]);
+                    Task deadlineTask = new Deadline(taskContent[2],
+                            LocalDateTime.parse("2025-01-31T23:59"));
                     if (taskContent[1].equals("1")) {
                         deadlineTask.markAsDone();
                     }
                     taskList.add(deadlineTask);
                 }
                 case "E" -> {
-                    Task eventTask = new Event(taskContent[2], taskContent[3], taskContent[4]);
+                    Task eventTask = new Event(taskContent[2],
+                            LocalDateTime.parse("2025-01-31T23:59"),
+                            LocalDateTime.parse("2025-01-31T23:59"));
                     if (taskContent[1].equals("1")) {
                         eventTask.markAsDone();
                     }

@@ -5,8 +5,14 @@ import tasks.Event;
 import tasks.Task;
 import tasks.ToDo;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -72,6 +78,22 @@ public class Parser {
         return true;
     }
 
+    public static LocalDateTime parseUserDateTime(String dateTime) {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm")) // 31/01/2025 1559
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) // 31/01/2025 15:59
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yy HHmm")) // 31/01/25 1559
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yy HH:mm")) // 31/01/25 15:59
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm")) // 2025-01-31 1559
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) // 2025-01-31 15:59
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy")) // 31/01/2025
+                .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yy")) // 31/01/25
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd")) // 2025-01-31
+                .toFormatter(Locale.ENGLISH);
+
+        return LocalDateTime.parse(dateTime, formatter);
+    }
+
     /**
      * Adds a Deadline task to the list of tasks.
      * @param args The user command, which is already split (by space) into an array
@@ -86,6 +108,7 @@ public class Parser {
                     "Mirai does not understand a deadline with no content...",
                     "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!"
             );
+            ui.printSupportedDateTimeFormats();
         } else {
             int byIndex = 1;
 
@@ -98,22 +121,41 @@ public class Parser {
                         "You forgot to add your deadline...",
                         "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!"
                 );
+                ui.printSupportedDateTimeFormats();
                 return true;
             }
 
             String description = String.join(" ", Arrays.copyOfRange(args, 1, byIndex));
             String deadline = String.join(" ", Arrays.copyOfRange(args, byIndex + 1, args.length));
 
-            Deadline task = new Deadline(description, deadline);
+            try {
+                LocalDateTime deadlineTime = Parser.parseUserDateTime(deadline);
+                Deadline task = new Deadline(description, deadlineTime);
 
-            tasks.addTask(task);
-            storage.logNewTask(task);
+                tasks.addTask(task);
+                storage.logNewTask(task);
 
-            ui.printResponse(
-                    "Got it. I've added this task:",
-                    "  " + task,
-                    ui.getNumberOfTasksString(tasks.getSize())
-            );
+                ui.printResponse(
+                        "Got it. I've added this task:",
+                        "  " + task,
+                        ui.getNumberOfTasksString(tasks.getSize())
+                );
+            } catch (DateTimeParseException e) {
+                ui.printError(
+                        "Mirai does not understand your deadline...",
+                        "Please specify your deadline in one of the following formats:",
+                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
+                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
+                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
+                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
+                        "Note that if time is not provided, Mirai will assume 00:00!"
+                );
+            }
         }
 
         return true;
@@ -131,8 +173,9 @@ public class Parser {
         if (args.length == 1) {
             ui.printError(
                     "Mirai does not understand an event with no content...",
-                    "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!"
+                    "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
             );
+            ui.printSupportedDateTimeFormats();
         } else {
             int fromIndex = 1;
             while (fromIndex < args.length && !args[fromIndex].equals("/from")) {
@@ -142,8 +185,9 @@ public class Parser {
             if (fromIndex == args.length) {
                 ui.printError(
                         "You forgot to specify your start time...",
-                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!"
+                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
                 );
+                ui.printSupportedDateTimeFormats();
                 return true;
             }
 
@@ -157,13 +201,60 @@ public class Parser {
             if (toIndex == args.length) {
                 ui.printError(
                         "You forgot to specify your end time...",
-                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to end time'!"
+                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
                 );
+                ui.printSupportedDateTimeFormats();
                 return true;
             }
 
-            String startTime = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
-            String endTime = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
+            String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
+            String endTimeString = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
+
+            LocalDateTime startTime;
+
+            try {
+                startTime = Parser.parseUserDateTime(startTimeString);
+            } catch (DateTimeParseException e) {
+                ui.printError(
+                        "Mirai does not understand your start time...",
+                        "Please specify your start time in one of the following formats:",
+                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
+                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
+                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
+                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
+                        "Note that if time is not provided, Mirai will assume 00:00!"
+                );
+
+                return true;
+            }
+
+            LocalDateTime endTime;
+
+            try {
+                endTime = Parser.parseUserDateTime(endTimeString);
+            } catch (DateTimeParseException e) {
+                ui.printError(
+                        "Mirai does not understand your end time...",
+                        "Please specify your end time in one of the following formats:",
+                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
+                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
+                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
+                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
+                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> DD/MM/YY, such as 31/01/25",
+                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31",
+                        "Note that if time is not provided, Mirai will assume 00:00!"
+                );
+
+                return true;
+            }
 
             Event task = new Event(description, startTime, endTime);
 
