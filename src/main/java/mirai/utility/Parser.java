@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
+import javafx.util.Duration;
 import mirai.tasks.Deadline;
 import mirai.tasks.Event;
 import mirai.tasks.Task;
@@ -40,45 +43,42 @@ public class Parser {
     }
 
     /**
-     * Ends the conversation.
+     * Ends the conversation and closes the application after 2 seconds.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to end the conversation
+     * @return a goodbye message
      */
-    private boolean endConversation(String[] args, TaskList tasks, Ui ui, Storage storage) {
-        ui.printGoodbye();
-        return false;
+    private String endConversation(String[] args, TaskList tasks, Storage storage) {
+        PauseTransition delayClosure = new PauseTransition(Duration.seconds(2));
+        delayClosure.setOnFinished(event -> Platform.exit());
+        delayClosure.play();
+
+        return Message.GOODBYE;
     }
 
     /**
      * Adds a ToDo task to the list of tasks.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message to tell the user the task addition is successful/failing
      */
-    private boolean addTodo(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String addTodo(String[] args, TaskList tasks, Storage storage) {
         if (args.length == 1) {
-            ui.printError("Mirai does not understand a to-do task with no content...",
-                            "You can tell Mirai your to-do task by the syntax 'todo [task]'!");
-        } else {
-            String description = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-            ToDo toDo = new ToDo(description);
-
-            tasks.addTask(toDo);
-            storage.logNewTask(toDo);
-
-            ui.printResponse(
-                    "Got it. I've added this task:",
-                    "  " + toDo,
-                    ui.getNumberOfTasksString(tasks.getSize())
-            );
+            return Message.ERROR + "Mirai does not understand a to-do task with no content...\n"
+                    + "You can tell Mirai your to-do task by the syntax 'todo [task]'!\n";
         }
 
-        return true;
+        String description = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        ToDo toDo = new ToDo(description);
+
+        tasks.addTask(toDo);
+        storage.logNewTask(toDo);
+
+        return "Got it. I've added this task:\n"
+                + "  " + toDo + "\n"
+                + Message.getNumOfTasks(tasks.getSize());
     }
 
     /**
@@ -86,7 +86,7 @@ public class Parser {
      * @param dateTime The user's date-time string
      * @return a LocalDateTime representation of the user's date-time
      */
-    public static LocalDateTime parseUserDateTime(String dateTime) {
+    private static LocalDateTime parseUserDateTime(String dateTime) {
         DateTimeFormatter formatter = new DateTimeFormatterBuilder()
                 .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm")) // 31/01/2025 1559
                 .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) // 31/01/2025 15:59
@@ -103,364 +103,269 @@ public class Parser {
      * Adds a Deadline task to the list of tasks.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message to tell the user the task addition is successful/failing
      */
-    private boolean addDeadline(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String addDeadline(String[] args, TaskList tasks, Storage storage) {
         if (args.length == 1) {
-            ui.printError(
-                    "Mirai does not understand a deadline with no content...",
-                    "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!"
-            );
-            ui.printSupportedDateTimeFormats();
-        } else {
-            int byIndex = 1;
-
-            while (byIndex < args.length && !args[byIndex].equals("/by")) {
-                byIndex++;
-            }
-
-            if (byIndex == args.length) {
-                ui.printError(
-                        "You forgot to add your deadline...",
-                        "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!"
-                );
-                ui.printSupportedDateTimeFormats();
-                return true;
-            }
-
-            String description = String.join(" ", Arrays.copyOfRange(args, 1, byIndex));
-            String deadline = String.join(" ", Arrays.copyOfRange(args, byIndex + 1, args.length));
-
-            try {
-                LocalDateTime deadlineTime = Parser.parseUserDateTime(deadline);
-                Deadline task = new Deadline(description, deadlineTime);
-
-                tasks.addTask(task);
-                storage.logNewTask(task);
-
-                ui.printResponse(
-                        "Got it. I've added this task:",
-                        "  " + task,
-                        ui.getNumberOfTasksString(tasks.getSize())
-                );
-            } catch (DateTimeParseException e) {
-                ui.printError(
-                        "Mirai does not understand your deadline...",
-                        "Please specify your deadline in one of the following formats:",
-                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
-                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
-                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
-                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
-                );
-            }
+            return Message.ERROR + "Mirai does not understand a deadline with no content...\n"
+                + "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!\n"
+                + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        return true;
+        int byIndex = 1;
+
+        while (byIndex < args.length && !args[byIndex].equals("/by")) {
+            byIndex++;
+        }
+
+        if (byIndex == args.length) {
+            return Message.ERROR + "You forgot to add your deadline...\n"
+                    + "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
+
+        String description = String.join(" ", Arrays.copyOfRange(args, 1, byIndex));
+        String deadline = String.join(" ", Arrays.copyOfRange(args, byIndex + 1, args.length));
+
+        try {
+            LocalDateTime deadlineTime = Parser.parseUserDateTime(deadline);
+            Deadline task = new Deadline(description, deadlineTime);
+
+            tasks.addTask(task);
+            storage.logNewTask(task);
+
+            return "Got it. I've added this task:\n"
+                    + "  " + task + "\n"
+                    + Message.getNumOfTasks(tasks.getSize());
+
+        } catch (DateTimeParseException e) {
+            return Message.ERROR + "Mirai does not understand your deadline...\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
     }
 
     /**
      * Adds an Event task to the list of tasks.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message to tell the user the task addition is successful/failing
      */
-    private boolean addEvent(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String addEvent(String[] args, TaskList tasks, Storage storage) {
         if (args.length == 1) {
-            ui.printError(
-                    "Mirai does not understand an event with no content...",
-                    "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
-            );
-            ui.printSupportedDateTimeFormats();
-        } else {
-            int fromIndex = 1;
-            while (fromIndex < args.length && !args[fromIndex].equals("/from")) {
-                fromIndex++;
-            }
-
-            if (fromIndex == args.length) {
-                ui.printError(
-                        "You forgot to specify your start time...",
-                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
-                );
-                ui.printSupportedDateTimeFormats();
-                return true;
-            }
-
-            String description = String.join(" ", Arrays.copyOfRange(args, 1, fromIndex));
-
-            int toIndex = fromIndex + 1;
-            while (toIndex < args.length && !args[toIndex].equals("/to")) {
-                toIndex++;
-            }
-
-            if (toIndex == args.length) {
-                ui.printError(
-                        "You forgot to specify your end time...",
-                        "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!"
-                );
-                ui.printSupportedDateTimeFormats();
-                return true;
-            }
-
-            String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
-            String endTimeString = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
-
-            LocalDateTime startTime;
-
-            try {
-                startTime = Parser.parseUserDateTime(startTimeString);
-            } catch (DateTimeParseException e) {
-                ui.printError(
-                        "Mirai does not understand your start time...",
-                        "Please specify your start time in one of the following formats:",
-                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
-                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
-                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
-                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
-                );
-
-                return true;
-            }
-
-            LocalDateTime endTime;
-
-            try {
-                endTime = Parser.parseUserDateTime(endTimeString);
-            } catch (DateTimeParseException e) {
-                ui.printError(
-                        "Mirai does not understand your end time...",
-                        "Please specify your end time in one of the following formats:",
-                        ">>> DD/MM/YYYY HHmm, such as 31/01/2025 1559",
-                        ">>> DD/MM/YYYY HH:mm, such as 31/01/2025 15:59",
-                        ">>> DD/MM/YY HHmm, such as 31/01/25 1559",
-                        ">>> DD/MM/YY HH:mm, such as 31/01/25 15:59",
-                        ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559",
-                        ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59"
-                );
-
-                return true;
-            }
-
-            Event task = new Event(description, startTime, endTime);
-
-            tasks.addTask(task);
-            storage.logNewTask(task);
-
-            ui.printResponse(
-                    "Got it. I've added this task:",
-                    "  " + task,
-                    ui.getNumberOfTasksString(tasks.getSize())
-            );
+            return Message.ERROR + "Mirai does not understand an event with no content...\n"
+                    + "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        return true;
+        int fromIndex = 1;
+        while (fromIndex < args.length && !args[fromIndex].equals("/from")) {
+            fromIndex++;
+        }
+
+        if (fromIndex == args.length) {
+            return Message.ERROR + "You forgot to specify your start time...\n"
+                    + "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
+
+        String description = String.join(" ", Arrays.copyOfRange(args, 1, fromIndex));
+
+        int toIndex = fromIndex + 1;
+        while (toIndex < args.length && !args[toIndex].equals("/to")) {
+            toIndex++;
+        }
+
+        if (toIndex == args.length) {
+            return "You forgot to specify your end time...\n"
+                    + "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
+
+        String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
+        String endTimeString = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
+
+        LocalDateTime startTime;
+
+        try {
+            startTime = Parser.parseUserDateTime(startTimeString);
+        } catch (DateTimeParseException e) {
+            return Message.ERROR + "Mirai does not understand your start time...\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
+
+        LocalDateTime endTime;
+
+        try {
+            endTime = Parser.parseUserDateTime(endTimeString);
+        } catch (DateTimeParseException e) {
+            return Message.ERROR + "Mirai does not understand your end time...\n"
+                    + Message.SUPPORTED_DATETIME_FORMATS;
+        }
+
+        Event task = new Event(description, startTime, endTime);
+
+        tasks.addTask(task);
+        storage.logNewTask(task);
+
+        return "Got it. I've added this task:\n"
+                + "  " + task;
     }
 
     /**
      * Lists all tasks to the user.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message string of all user's tasks
      */
-    private boolean listAllTasks(String[] args, TaskList tasks, Ui ui, Storage storage) {
-        String[] taskStrings = new String[tasks.getSize() + 1];
+    private String listAllTasks(String[] args, TaskList tasks, Storage storage) {
+        StringBuilder result = new StringBuilder("Here are the tasks in your list:\n");
 
-        taskStrings[0] = "Here are the tasks in your list:";
         for (int i = 0; i < tasks.getSize(); i++) {
-            taskStrings[i + 1] = (i + 1) + "." + tasks.getTask(i).toString();
+            result.append(i + 1).append('.').append(tasks.getTask(i).toString()).append('\n');
         }
 
-        ui.printResponse(taskStrings);
-        return true;
+        return result.toString();
     }
 
     /**
      * Marks a task as done.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message showing user the marked task, or an error message
      */
-    private boolean markTask(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String markTask(String[] args, TaskList tasks, Storage storage) {
         int taskIndex = Integer.parseInt(args[1]);
 
         if (taskIndex < 1) {
-            ui.printError(
-                    "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a non-positive index...\n"
+                    + "Mirai stores your tasks with positive indexes. Please specify a positive index!";
         }
 
         if (taskIndex > tasks.getSize()) {
-            ui.printError(
-                    "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize()
-                            + " tasks in your list. Please specify an index smaller than this!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a too large index...\n"
+                    + "You are only having " + tasks.getSize()
+                    + " task(s) in your list. Please specify an index smaller than this!";
         }
 
         tasks.markTask(taskIndex - 1);
         storage.relogAllTasks(tasks.getTaskList());
 
-        ui.printResponse(
-                "Nice! I've marked this task as done:",
-                "  " + tasks.getTask(taskIndex - 1).toString()
-        );
-
-        return true;
+        return "Nice! I've marked this task as done:\n"
+                + "  " + tasks.getTask(taskIndex - 1).toString();
     }
 
     /**
      * Marks a task as not done.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return the message showing user the unmarked task, or an error message
      */
-    private boolean unmarkTask(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String unmarkTask(String[] args, TaskList tasks, Storage storage) {
         int taskIndex = Integer.parseInt(args[1]);
 
         if (taskIndex < 1) {
-            ui.printError(
-                    "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a non-positive index...\n"
+                    + "Mirai stores your tasks with positive indexes. Please specify a positive index!";
         }
 
         if (taskIndex > tasks.getSize()) {
-            ui.printError(
-                    "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize()
-                            + " tasks in your list. Please specify an index smaller than this!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a too large index...\n"
+                    + "You are only having " + tasks.getSize()
+                    + " task(s) in your list. Please specify an index smaller than this!";
         }
 
         tasks.unmarkTask(taskIndex - 1);
         storage.relogAllTasks(tasks.getTaskList());
 
-        ui.printResponse(
-                "OK, I've marked this task as not done yet:",
-                "  " + tasks.getTask(taskIndex - 1).toString()
-        );
-
-        return true;
+        return "OK, I've marked this task as not done yet:\n"
+                + "  " + tasks.getTask(taskIndex - 1).toString();
     }
 
     /**
      * Informs the user that the command is undefined.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return an error message telling the user that the command is undefined
      */
-    private boolean handleUnknownCommand(String[] args, TaskList tasks, Ui ui, Storage storage) {
-        ui.printError(
-                "Sorry, Mirai does not understand what you mean...",
-                "Please type 'help' to know what commands Mirai can understand!"
-        );
-
-        return true;
+    private String handleUnknownCommand(String[] args, TaskList tasks, Storage storage) {
+        return "Sorry, Mirai does not understand what you mean...\n"
+                + "Please type 'help' to know what commands Mirai can understand!";
     }
 
     /**
      * Lists all commands supported by the chatbot.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return a message string to list all supported commands
      */
-    private boolean listAllSupportedCommands(String[] args, TaskList tasks, Ui ui, Storage storage) {
-        String[] commands = new String[this.commandMap.size() + 1];
+    private String listAllSupportedCommands(String[] args, TaskList tasks, Storage storage) {
+        StringBuilder message = new StringBuilder("Mirai currently supports the following commands:\n");
 
-        commands[0] = "Mirai currently supports the following commands:";
-        int index = 1;
         for (String keyword : this.commandMap.keySet()) {
-            commands[index++] = keyword;
+            if (!keyword.equals("UNKNOWN_COMMAND")) {
+                message.append(keyword).append('\n');
+            }
         }
 
-        ui.printResponse(commands);
-        return true;
+        return message.toString();
     }
 
     /**
      * Removes a task at the specified index.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return a message to tell the user the deleted task, or an error message
      */
-    private boolean deleteTask(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    private String deleteTask(String[] args, TaskList tasks, Storage storage) {
         int taskIndex = Integer.parseInt(args[1]);
 
         if (taskIndex < 1) {
-            ui.printError(
-                    "It looks like you have keyed in a non-positive index...",
-                    "Mirai stores your tasks with positive indexes. Please specify a positive index!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a non-positive index...\n"
+                    + "Mirai stores your tasks with positive indexes. Please specify a positive index!";
         }
 
         if (taskIndex > tasks.getSize()) {
-            ui.printError(
-                    "It looks like you have keyed in a too large index...",
-                    "You are only having " + tasks.getSize()
-                            + " tasks in your list. Please specify an index smaller than this!"
-            );
-            return true;
+            return Message.ERROR + "It looks like you have keyed in a too large index...\n"
+                    + "You are only having " + tasks.getSize()
+                    + " task(s) in your list. Please specify an index smaller than this!";
         }
 
         Task removedTask = tasks.getTask(taskIndex - 1);
         tasks.deleteTask(taskIndex - 1);
         storage.relogAllTasks(tasks.getTaskList());
 
-        ui.printResponse(
-                "Noted. I've removed this task:",
-                "  " + removedTask.toString(),
-                ui.getNumberOfTasksString(tasks.getSize())
-        );
-
-        return true;
+        return "Noted. I've removed this task:\n"
+                + "  " + removedTask.toString()
+                + Message.getNumOfTasks(tasks.getSize());
     }
 
     /**
      * Displays to the user all tasks matching a given keyword.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
-     * @param ui The user interface
      * @param storage The task storage
-     * @return a boolean signal to continue the conversation
+     * @return a message showing the user all tasks with the matching keyword
      */
-    public boolean findTasks(String[] args, TaskList tasks, Ui ui, Storage storage) {
+    public String findTasks(String[] args, TaskList tasks, Storage storage) {
         String keyword = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
         TaskList filteredTaskList = tasks.filterBasedOnKeyword(keyword);
-        String[] taskStrings = new String[filteredTaskList.getSize() + 1];
-        taskStrings[0] = "Here are the matching tasks in your list:";
+
+        StringBuilder message = new StringBuilder("Here are the matching tasks in your list:\n");
+
         for (int i = 0; i < filteredTaskList.getSize(); i++) {
-            taskStrings[i + 1] = (i + 1) + "." + filteredTaskList.getTask(i).toString();
+            message.append(i + 1).append('.').append(filteredTaskList.getTask(i).toString()).append('\n');
         }
 
-        ui.printResponse(taskStrings);
-        return true;
+        return message.toString();
     }
 
     /**
