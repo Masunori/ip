@@ -4,7 +4,6 @@ import mirai.utility.Command;
 import mirai.utility.Parser;
 import mirai.utility.Storage;
 import mirai.utility.TaskList;
-import mirai.utility.Ui;
 
 /**
  * The Mirai class encapsulates a chatbot named Mirai.
