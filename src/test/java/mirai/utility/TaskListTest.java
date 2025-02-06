@@ -1,6 +1,5 @@
 package mirai.utility;
 
-import mirai.tasks.Task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -8,6 +7,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import mirai.tasks.Task;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TaskListTest {
