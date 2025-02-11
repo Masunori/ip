@@ -53,7 +53,7 @@ public class Storage {
             }
             case "D" -> {
                 Task deadlineTask = new Deadline(taskContent[2],
-                        LocalDateTime.parse("2025-01-31T23:59"));
+                        LocalDateTime.parse(taskContent[3]));
                 if (taskContent[1].equals("1")) {
                     deadlineTask.markAsDone();
                 }
@@ -61,8 +61,8 @@ public class Storage {
             }
             case "E" -> {
                 Task eventTask = new Event(taskContent[2],
-                        LocalDateTime.parse("2025-01-31T23:59"),
-                        LocalDateTime.parse("2025-01-31T23:59"));
+                        LocalDateTime.parse(taskContent[3]),
+                        LocalDateTime.parse(taskContent[4]));
                 if (taskContent[1].equals("1")) {
                     eventTask.markAsDone();
                 }
