@@ -1,16 +1,23 @@
 package mirai.ui;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
+/**
+ * The Main class encapsulates a JavaFX application, in this case the Mirai chatbot application.
+ */
 public class Main extends Application {
     private Mirai mirai = new Mirai("./data/mirai.txt");
 
+    /**
+     * Starts the application.
+     * @param stage The stage to mount
+     */
     @Override
     public void start(Stage stage) {
         try {

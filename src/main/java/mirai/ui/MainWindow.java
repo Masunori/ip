@@ -1,5 +1,7 @@
 package mirai.ui;
 
+import java.util.Objects;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,8 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import mirai.utility.Message;
-
-import java.util.Objects;
 
 /**
  * Controller for the main GUI.
@@ -31,6 +31,7 @@ public class MainWindow extends AnchorPane {
     private Image miraiImage = new Image(
             Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaDuke.png")));
 
+    /** Initialize the chatbot interface. */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
