@@ -34,6 +34,7 @@ public class Parser {
         commandMap.put("delete", this::deleteTask);
         commandMap.put("event", this::addEvent);
         commandMap.put("find", this::findTasks);
+        commandMap.put("flexfind", this::flexibleFindTasks);
         commandMap.put("help", this::listAllSupportedCommands);
         commandMap.put("list", this::listAllTasks);
         commandMap.put("mark", this::markTask);
@@ -406,6 +407,31 @@ public class Parser {
 
         for (int i = 0; i < filteredTaskList.getSize(); i++) {
             message.append(i + 1).append('.').append(filteredTaskList.getTask(i).toString()).append('\n');
+        }
+
+        return message.toString();
+    }
+
+    /**
+     * Displays to the user all tasks based on relevance to a keyword. The relevance algorithm is available in the
+     * method <code>Task::computeCloseness(String)</code>.
+     * @param args The user command, which is already split (by space) into an array
+     * @param tasks The list of tasks
+     * @param storage The task storage
+     * @return a message showing the user all tasks with the matching keyword
+     */
+    public String flexibleFindTasks(String[] args, TaskList tasks, Storage storage) {
+        String keyword = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
+        TaskList filteredTaskList = tasks.sortSearchResults(keyword);
+
+        StringBuilder message = new StringBuilder("Here are the matching tasks in your list:\n");
+
+        for (int i = 0; i < filteredTaskList.getSize(); i++) {
+            message.append(i + 1)
+                    .append('.')
+                    .append(filteredTaskList.getTask(i).toString())
+                    .append('\n');
         }
 
         return message.toString();

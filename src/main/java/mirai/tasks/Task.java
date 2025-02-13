@@ -1,5 +1,7 @@
 package mirai.tasks;
 
+import mirai.utility.Utility;
+
 /**
  * Encapsulates a task that can be done or not done.
  */
@@ -57,4 +59,33 @@ public abstract class Task {
      * @return A string representation of the task, store-able in a file
      */
     public abstract String toNoteForm();
+
+    /**
+     * Computes the closeness of the task's description to the user's keyword.<br>
+     * This returns 0 if the keyword is contained within the task's description. Else, split the keywords and
+     * description into two String arrays and perform matching for each keyword word.
+     *
+     * @param keyword The user's keyword
+     * @return the closeness of the task's description to the user's keyword
+     */
+    public double computeCloseness(String keyword) {
+        String[] keywordWords = keyword.split("\\s+");
+        String[] descriptionWords = this.description.split("\\s+");
+
+        double distance = 0;
+
+        // for each keyword word, compute the smallest edit distance to any of the description word
+        for (String kw : keywordWords) {
+            double minDistanceToKw = Double.MAX_VALUE;
+
+            for (String dw : descriptionWords) {
+                minDistanceToKw = Math.min(minDistanceToKw, Utility.getEditDistance(dw, kw));
+            }
+
+            // sum the smallest edit distances for each keyword word up
+            distance += minDistanceToKw;
+        }
+
+        return distance;
+    }
 }
