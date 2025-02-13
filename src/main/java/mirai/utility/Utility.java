@@ -1,5 +1,8 @@
 package mirai.utility;
 
+/**
+ * A utility class to implement utility methods that other classes may use.
+ */
 public class Utility {
     /**
      * Recursively calculates the edit distance between the substrings [0, i1) of word 1 and [0, i2) of word 2.

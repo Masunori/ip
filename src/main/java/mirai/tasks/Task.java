@@ -2,8 +2,6 @@ package mirai.tasks;
 
 import mirai.utility.Utility;
 
-import java.util.Arrays;
-
 /**
  * Encapsulates a task that can be done or not done.
  */
