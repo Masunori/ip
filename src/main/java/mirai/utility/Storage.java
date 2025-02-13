@@ -37,44 +37,34 @@ public class Storage {
         this.file.getParentFile().mkdirs();
         this.file.createNewFile();
 
-        Scanner scanner = new Scanner(this.file);
         List<Task> taskList = new ArrayList<>();
 
-        while (scanner.hasNextLine()) {
-            String[] taskContent = scanner.nextLine().split(" \\| ");
+        try (Scanner scanner = new Scanner(this.file)) {
+            while (scanner.hasNextLine()) {
+                String[] taskContent = scanner.nextLine().split(" \\| ");
 
-            switch (taskContent[0]) {
-            case "T" -> {
-                Task toDoTask = new ToDo(taskContent[2]);
-                if (taskContent[1].equals("1")) {
-                    toDoTask.markAsDone();
-                }
-                taskList.add(toDoTask);
-            }
-            case "D" -> {
-                Task deadlineTask = new Deadline(taskContent[2],
+                Task task = switch (taskContent[0]) {
+                case "T" -> new ToDo(taskContent[2]);
+                case "D" -> new Deadline(taskContent[2],
                         LocalDateTime.parse(taskContent[3]));
-                if (taskContent[1].equals("1")) {
-                    deadlineTask.markAsDone();
-                }
-                taskList.add(deadlineTask);
-            }
-            case "E" -> {
-                Task eventTask = new Event(taskContent[2],
+                case "E" -> new Event(taskContent[2],
                         LocalDateTime.parse(taskContent[3]),
                         LocalDateTime.parse(taskContent[4]));
-                if (taskContent[1].equals("1")) {
-                    eventTask.markAsDone();
+                default -> null;
+                };
+
+                if (task == null) {
+                    continue;
                 }
-                taskList.add(eventTask);
-            }
-            default -> {
-                // do nothing
-            }
+
+                if (taskContent[1].equals("1")) {
+                    task.markAsDone();
+                }
+
+                taskList.add(task);
             }
         }
 
-        scanner.close();
         return taskList;
     }
 
@@ -96,7 +86,7 @@ public class Storage {
      * @param tasks the list of tasks to be used for overwriting
      */
     public void relogAllTasks(List<Task> tasks) {
-        // delete all content from the old file
+        // delete all content from the old file to ensure a clear file before overwriting
         try (FileWriter contentDeleter = new FileWriter(this.file)) {
             contentDeleter.write("");
         } catch (IOException e) {

@@ -1,5 +1,11 @@
 package mirai.utility;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * An utility class containing message templates used throughout the Mirai chatbot.
+ */
 public class Message {
     public static final String GREETING =
             "Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n"
@@ -18,15 +24,31 @@ public class Message {
             + ">>> YYYY-MM-DD HHmm, such as 2025-01-31 1559\n"
             + ">>> YYYY-MM-DD HH:mm, such as 2025-01-31 15:59";
 
-    public static String getNumOfTasks(int numOfTasks) {
-        return String.format("Now you have %d task%s in the list",
-                numOfTasks,
-                numOfTasks <= 1 ? "" : "s");
-    }
-
     public static final String STORAGE_FILE_CREATION_ERROR =
             "OOPS!!! Mirai cannot load data from your storage...\n"
             + "Mirai will create an empty task list.";
 
     public static final String ERROR = "OOPS!!! ";
+
+    public static final Map<String, String> COMMAND_DESCRIPTION = new HashMap<>() {{
+            put("bye", "Syntax: bye\nExits the Mirai chatbot application.");
+            put("deadline", "Syntax: deadline [description] /by [date]\nStores a deadline task.");
+            put("delete", "Syntax: delete [index]\nDeletes a task from the storage.");
+            put("event", "Syntax: event [description] /from [date] to [date]\nStores an event task.");
+            put("find", "Syntax: find [keyword]\nFinds a task based on a word/words. Note that the entire phrase after "
+                    + "the 'find' keyword will be considered as a block for finding.");
+            put("help", "Syntax: help\nLists all commands that Mirai supports.");
+            put("list", "Syntax: list\nLists all tasks currently stored by Mirai.");
+            put("mark", "Syntax: mark [index]\nMarks a task as done.");
+            put("todo", "Syntax: todo [description]\nStores a to-do task.");
+            put("unmark", "Syntax: unmark [index]\nMarks a task as uncompleted.");
+        }
+    };
+
+
+    public static String getNumOfTasks(int numOfTasks) {
+        return String.format("Now you have %d task%s in the list",
+                numOfTasks,
+                numOfTasks <= 1 ? "" : "s");
+    }
 }

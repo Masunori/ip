@@ -100,6 +100,55 @@ public class Parser {
     }
 
     /**
+     * Finds the index of a keyword among the arguments.
+     * @param args The arguments
+     * @param keyword The keyword to search for
+     * @param fromInclusive The index to search from (inclusive)
+     * @param toExclusive The index to terminate search (terminate before this index)
+     * @return The index of the keyword, -1 if the keyword does not exist in the range.
+     */
+    private int findIndex(String[] args, String keyword, int fromInclusive, int toExclusive) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals(keyword)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Extracts the arguments necessary to construct a deadline.
+     * @param args The arguments
+     * @return An array containing two Strings: the description and the deadline date
+     */
+    private String[] extractDeadlineArgs(String[] args) {
+        int byIndex = findIndex(args, "/by", 0, args.length);
+        if (byIndex == -1) {
+            return new String[] {null, null};
+        }
+
+        String description = String.join(" ", Arrays.copyOfRange(args, 1, byIndex));
+        String deadline = String.join(" ", Arrays.copyOfRange(args, byIndex + 1, args.length));
+
+        return new String[] {description, deadline};
+    }
+
+    /**
+     * Parses a date-time string.<br>
+     * <b>Note:</b> This is a wrapper over Parser::parseUserDateTime
+     * within a try-catch block.
+     * @param timeValue The date-time string.
+     * @return The LocalDateTime object if the string parse is successful. Else, null.
+     */
+    private LocalDateTime parseDateTime(String timeValue) {
+        try {
+            return Parser.parseUserDateTime(timeValue);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
+    }
+
+    /**
      * Adds a Deadline task to the list of tasks.
      * @param args The user command, which is already split (by space) into an array
      * @param tasks The list of tasks
@@ -113,36 +162,49 @@ public class Parser {
                 + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        int byIndex = 1;
+        String[] deadlineArgs = extractDeadlineArgs(args);
 
-        while (byIndex < args.length && !args[byIndex].equals("/by")) {
-            byIndex++;
-        }
+        String description = deadlineArgs[0];
+        String deadline = deadlineArgs[1];
 
-        if (byIndex == args.length) {
-            return Message.ERROR + "You forgot to add your deadline...\n"
-                    + "You can tell Mirai your deadline by the syntax 'deadline [task] /by [deadline]'!\n"
-                    + Message.SUPPORTED_DATETIME_FORMATS;
-        }
-
-        String description = String.join(" ", Arrays.copyOfRange(args, 1, byIndex));
-        String deadline = String.join(" ", Arrays.copyOfRange(args, byIndex + 1, args.length));
-
-        try {
-            LocalDateTime deadlineTime = Parser.parseUserDateTime(deadline);
-            Deadline task = new Deadline(description, deadlineTime);
-
-            tasks.addTask(task);
-            storage.logNewTask(task);
-
-            return "Got it. I've added this task:\n"
-                    + "  " + task + "\n"
-                    + Message.getNumOfTasks(tasks.getSize());
-
-        } catch (DateTimeParseException e) {
+        LocalDateTime deadlineTime = parseDateTime(deadline);
+        if (deadlineTime == null) {
             return Message.ERROR + "Mirai does not understand your deadline...\n"
                     + Message.SUPPORTED_DATETIME_FORMATS;
         }
+
+        Deadline task = new Deadline(description, deadlineTime);
+        tasks.addTask(task);
+        storage.logNewTask(task);
+
+        return "Got it. I've added this task:\n"
+                + "  " + task + "\n"
+                + Message.getNumOfTasks(tasks.getSize());
+    }
+
+    /**
+     * Extracts the arguments necessary to construct an Event.
+     * @param args The arguments
+     * @return An array containing three Strings: the description, the start time and the end time
+     */
+    private String[] extractEventArgs(String[] args) {
+        int fromIndex = findIndex(args, "/from", 0, args.length);
+
+        if (fromIndex == -1) {
+            return new String[] {null, null, null};
+        }
+
+        int toIndex = findIndex(args, "/to", fromIndex + 1, args.length);
+        String description = String.join(" ", Arrays.copyOfRange(args, 0, fromIndex));
+        String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
+
+        if (toIndex == -1) {
+            return new String[] {description, startTimeString, null};
+        }
+
+        String endTimeIndex = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
+
+        return new String[] {description, startTimeString, endTimeIndex};
     }
 
     /**
@@ -159,49 +221,32 @@ public class Parser {
                     + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        int fromIndex = 1;
-        while (fromIndex < args.length && !args[fromIndex].equals("/from")) {
-            fromIndex++;
-        }
+        String[] timeStrings = extractEventArgs(args);
+        String description = timeStrings[0];
+        String startTimeString = timeStrings[1];
+        String endTimeString = timeStrings[2];
 
-        if (fromIndex == args.length) {
+        if (startTimeString == null) {
             return Message.ERROR + "You forgot to specify your start time...\n"
                     + "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!\n"
                     + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        String description = String.join(" ", Arrays.copyOfRange(args, 1, fromIndex));
-
-        int toIndex = fromIndex + 1;
-        while (toIndex < args.length && !args[toIndex].equals("/to")) {
-            toIndex++;
-        }
-
-        if (toIndex == args.length) {
+        if (endTimeString == null) {
             return "You forgot to specify your end time...\n"
                     + "You can tell Mirai your event by the syntax 'event [task] /from [start time] /to [end time]'!\n"
                     + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
-        String endTimeString = String.join(" ", Arrays.copyOfRange(args, toIndex + 1, args.length));
-
-        LocalDateTime startTime;
-
-        try {
-            startTime = Parser.parseUserDateTime(startTimeString);
-        } catch (DateTimeParseException e) {
+        LocalDateTime startTime = parseDateTime(startTimeString);
+        if (startTime == null) {
             return Message.ERROR + "Mirai does not understand your start time...\n"
                     + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
-        LocalDateTime endTime;
-
-        try {
-            endTime = Parser.parseUserDateTime(endTimeString);
-        } catch (DateTimeParseException e) {
-            return Message.ERROR + "Mirai does not understand your end time...\n"
-                    + Message.SUPPORTED_DATETIME_FORMATS;
+        LocalDateTime endTime = parseDateTime(endTimeString);
+        if (endTime == null) {
+            return Message.ERROR + "Mirai does not understand your end time...\n" + Message.SUPPORTED_DATETIME_FORMATS;
         }
 
         Event task = new Event(description, startTime, endTime);
@@ -308,10 +353,8 @@ public class Parser {
     private String listAllSupportedCommands(String[] args, TaskList tasks, Storage storage) {
         StringBuilder message = new StringBuilder("Mirai currently supports the following commands:\n");
 
-        for (String keyword : this.commandMap.keySet()) {
-            if (!keyword.equals("UNKNOWN_COMMAND")) {
-                message.append(keyword).append('\n');
-            }
+        for (Map.Entry<String, String> command : Message.COMMAND_DESCRIPTION.entrySet()) {
+            message.append(String.format(">>> %s:\n%s", command.getKey(), command.getValue())).append('\n');
         }
 
         return message.toString();
