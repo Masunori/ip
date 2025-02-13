@@ -1,6 +1,7 @@
 package mirai.utility;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import mirai.tasks.Task;
@@ -103,5 +104,18 @@ public class TaskList {
         }
 
         return results;
+    }
+
+    /**
+     * Returns a TaskList where search results are ordered based on its closeness to a given keyword.
+     *
+     * @param keyword The user's keyword
+     * @return The sorted TaskList
+     */
+    public TaskList sortSearchResults(String keyword) {
+        TaskList sortedTasks = new TaskList(this.taskList);
+        sortedTasks.taskList.sort(Comparator.comparingDouble(t -> t.computeCloseness(keyword)));
+
+        return sortedTasks;
     }
 }
