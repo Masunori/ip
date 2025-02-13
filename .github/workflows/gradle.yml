@@ -34,6 +34,8 @@ jobs:
         run: ./gradlew check
 
       - name: Make runtest.sh executable
+        if: runner.os == 'Linux'
+        working-directory:  ${{ github.workspace }}/text-ui-test
         run: chmod +x ./runtest.sh
 
       - name: Perform IO redirection test (*NIX)
