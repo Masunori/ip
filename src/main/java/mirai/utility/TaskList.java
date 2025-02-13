@@ -40,7 +40,7 @@ public class TaskList {
      * @param taskIndex The index of the task to be removed
      */
     public void deleteTask(int taskIndex) {
-        assert(0 <= index && index < this.getSize());
+        assert(0 <= taskIndex && taskIndex < this.getSize());
         this.taskList.remove(taskIndex);
     }
 
@@ -49,7 +49,7 @@ public class TaskList {
      * @param taskIndex The index of the task to be marked as done
      */
     public void markTask(int taskIndex) {
-        assert(0 <= index && index < this.getSize());
+        assert(0 <= taskIndex && taskIndex < this.getSize());
         this.taskList.get(taskIndex).markAsDone();
     }
 
@@ -58,7 +58,7 @@ public class TaskList {
      * @param taskIndex The index of the task to be marked as undone
      */
     public void unmarkTask(int taskIndex) {
-        assert(0 <= index && index < this.getSize());
+        assert(0 <= taskIndex && taskIndex < this.getSize());
         this.taskList.get(taskIndex).markAsUndone();
     }
 
