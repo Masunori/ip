@@ -80,6 +80,7 @@ public class TaskList {
      * @return The task at the index
      */
     public Task getTask(int index) {
+        assert(0 <= index && index < this.getSize());
         return this.taskList.get(index);
     }
 
