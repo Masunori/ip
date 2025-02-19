@@ -79,6 +79,11 @@ public abstract class Task {
             double minDistanceToKw = Double.MAX_VALUE;
 
             for (String dw : descriptionWords) {
+                if (dw.contains(kw)) {
+                    minDistanceToKw = 0;
+                    break;
+                }
+
                 minDistanceToKw = Math.min(minDistanceToKw, Utility.getEditDistance(dw, kw));
             }
 
