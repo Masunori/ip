@@ -15,7 +15,7 @@ get your job done much faster than traditional GUI applications.
 In case you wonder about Mirai's background story, visit our story [here](https://www.meganovel.com/story/A-Backpack-a-Gun-and-a-Codex_31000344924/Prologue_2762250)!
 
 # Quick Start
-1. Ensure you have Java `17` or above installed in your computer.
+1. Ensure you have Java `17` or above installed in your computer. **Mac users** please ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 2. Download the latest `mirai.jar` file from [here](https://github.com/Masunori/ip/releases/download/A-CheckStyle/mirai.jar).
 3. Copy the file to the folder you want to use as the *home folder* for your Mirai. From here on, assume that you store your file at `C:/Users/Username`.
 4. Open a command terminal, then key in the following:
