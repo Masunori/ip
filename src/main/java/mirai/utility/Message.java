@@ -8,7 +8,8 @@ import java.util.Map;
  */
 public class Message {
     public static final String GREETING =
-            "Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n"
+            "For now, just bear with this Elysia picture until I find a better avatar...\n\n"
+            + "Hello! I'm Mirai, your beautiful and intelligent personal assistant!\n"
             + "Now then, what can I do for you?";
 
     public static final String GOODBYE =
@@ -37,7 +38,7 @@ public class Message {
             put("event", "Syntax: event [description] /from [date] to [date]\nStores an event task.");
             put("find", "Syntax: find [keyword]\nFinds a task based on a word/words. Note that everything after "
                     + "the 'find' keyword will be considered as one block for finding.");
-            put("flexfind", "Syntax: flexfind [keyword]\nSort all tasks based on the relevance to the keyword."
+            put("flexfind", "Syntax: flexfind [keyword]\nSort all tasks based on the relevance to the keyword.\n"
                     + "Note that everything after the 'flexfind' keyword will be considered as one block for finding.");
             put("help", "Syntax: help\nLists all commands that Mirai supports.");
             put("list", "Syntax: list\nLists all tasks currently stored by Mirai.");

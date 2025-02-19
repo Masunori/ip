@@ -38,6 +38,8 @@ public class MainWindow extends AnchorPane {
         dialogContainer.getChildren().add(
                 DialogBox.getMiraiDialog(Message.GREETING, miraiImage)
         );
+
+        dialogContainer.getStyleClass().add("dialog-container");
     }
 
     /** Injects the Mirai instance */

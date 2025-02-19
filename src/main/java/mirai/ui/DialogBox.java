@@ -1,14 +1,9 @@
 package mirai.ui;
 
 import java.io.IOException;
-import java.util.Collections;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,13 +15,24 @@ import javafx.scene.shape.Circle;
  */
 public class DialogBox extends HBox {
     @FXML
-    private Label dialog;
+    protected Label dialog;
     @FXML
-    private ImageView displayPicture;
+    protected ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    /** An enumeration-type that signals to the DialogBox the source of the message */
+    protected enum Subject {
+        USER, MIRAI
+    }
+
+    protected DialogBox(String text, Image img, Subject subject) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
+            String resource = subject == Subject.USER
+                    ? "/view/UserDialogBox.fxml"
+                    : subject == Subject.MIRAI
+                    ? "/view/MiraiDialogBox.fxml"
+                    : "/view/DialogBox.fxml";
+
+            FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource(resource));
             fxmlLoader.setController(this);
             fxmlLoader.setRoot(this);
             fxmlLoader.load();
@@ -35,6 +41,8 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        dialog.getStyleClass().add("user-dialog-box-text");
+
         displayPicture.setImage(img);
 
         // make the profile image circular
@@ -42,23 +50,25 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips the dialog box such that the ImageView is on the left and text on the right.
+     * Creates a dialog box that represents the user's message.
+     *
+     * @param s The user's message/command
+     * @param i The user's profile picture
+     * @return a user's dialog component
      */
-    private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
-        setAlignment(Pos.TOP_LEFT);
+    public static UserDialogBox getUserDialog(String s, Image i) {
+        return new UserDialogBox(s, i);
     }
 
-    public static DialogBox getUserDialog(String s, Image i) {
-        return new DialogBox(s, i);
-    }
-
-    public static DialogBox getMiraiDialog(String s, Image i) {
-        var db = new DialogBox(s, i);
-        db.flip();
-        return db;
+    /**
+     * Creates a dialog box that represents Mirai's message.
+     *
+     * @param s Mirai's message
+     * @param i Mirai's profile picture
+     * @return Mirai's dialog component
+     */
+    public static MiraiDialogBox getMiraiDialog(String s, Image i) {
+        return new MiraiDialogBox(s, i);
     }
 }
 

@@ -1,0 +1,57 @@
+.dialog-container {
+    -fx-background-color: #0d0c24;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;  /* Make background transparent */
+    -fx-border-color: transparent;      /* Remove border */
+    -fx-padding: 0;                      /* Remove padding */
+}
+
+.scroll-pane .scroll-bar {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: #44428a;
+    -fx-background-radius: 10px;
+}
+
+.scroll-pane .scroll-bar .track {
+    -fx-background-color: #121212;
+}
+
+.scroll-pane .scroll-bar .increment-button,
+.scroll-pane .scroll-bar .decrement-button {
+    -fx-opacity: 0; /* Make buttons invisible */
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.user-dialog-box-text {
+    -fx-background-color: #1f1d47;
+    -fx-background-radius: 10px;
+
+    -fx-padding: 20px;
+    -fx-background-insets: 10px;
+    -fx-text-fill: aqua;
+}
+
+.text-field {
+    -fx-background-color: #1f1d47;
+    -fx-text-fill: aqua;
+    -fx-font-family: monospace;
+    -fx-background-insets: 2px;
+}
+
+.button {
+    -fx-background-color: #1f1d47;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-background-insets: 3px;
+}

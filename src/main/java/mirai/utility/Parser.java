@@ -196,7 +196,7 @@ public class Parser {
         }
 
         int toIndex = findIndex(args, "/to", fromIndex + 1, args.length);
-        String description = String.join(" ", Arrays.copyOfRange(args, 0, fromIndex));
+        String description = String.join(" ", Arrays.copyOfRange(args, 1, fromIndex));
         String startTimeString = String.join(" ", Arrays.copyOfRange(args, fromIndex + 1, toIndex));
 
         if (toIndex == -1) {
@@ -425,7 +425,7 @@ public class Parser {
 
         TaskList filteredTaskList = tasks.sortSearchResults(keyword);
 
-        StringBuilder message = new StringBuilder("Here are the matching tasks in your list:\n");
+        StringBuilder message = new StringBuilder("Here are your tasks in order of relevance:\n");
 
         for (int i = 0; i < filteredTaskList.getSize(); i++) {
             message.append(i + 1)
