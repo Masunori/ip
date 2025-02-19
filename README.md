@@ -10,7 +10,7 @@ Thanks for using Mirai, a (beautiful and intelligent assistant, as well as a) **
 Mirai is optimised for use via a **Command Line Interface** (CLI), while stil having the benefits of a **Graphical User Interface** (GUI). If you can type fast, Mirai will
 get your job done much faster than traditional GUI applications.
 
-![Mirai chatbot application interface](Ui.png)
+![Mirai chatbot application interface](docs/Ui.png)
 
 In case you wonder about Mirai's background story, visit our story [here](https://www.meganovel.com/story/A-Backpack-a-Gun-and-a-Codex_31000344924/Prologue_2762250)!
 
@@ -25,7 +25,7 @@ java -jar addressbook.jar
 ```
 You should see the interface that looks like below.
 
-![Mirai chatbot application welcome interface](Welcome.png)
+![Mirai chatbot application welcome interface](docs/Welcome.png)
 
 5. Type a command in the command box, and press **Enter** or click on the Send button to send a message to Mirai. Some necessary commands are below:
    - `list`: Lists all tasks.
