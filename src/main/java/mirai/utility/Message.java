@@ -38,8 +38,7 @@ public class Message {
             put("event", "Syntax: event [description] /from [date] to [date]\nStores an event task.");
             put("find", "Syntax: find [keyword]\nFinds a task based on a word/words. Note that everything after "
                     + "the 'find' keyword will be considered as one block for finding.");
-            put("flexfind", "Syntax: flexfind [keyword]\nSort all tasks based on the relevance to the keyword.\n"
-                    + "Note that everything after the 'flexfind' keyword will be considered as one block for finding.");
+            put("flexfind", "Syntax: flexfind [keyword]\nSort all tasks based on the relevance to the keyword.\n");
             put("help", "Syntax: help\nLists all commands that Mirai supports.");
             put("list", "Syntax: list\nLists all tasks currently stored by Mirai.");
             put("mark", "Syntax: mark [index]\nMarks a task as done.");
