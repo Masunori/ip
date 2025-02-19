@@ -5,7 +5,7 @@ package mirai.utility;
  */
 public class Utility {
     /**
-     * Recursively calculates the edit distance between the substrings [0, i1) of word 1 and [0, i2) of word 2.
+     * Calculates recursively the edit distance between the substrings [0, i1) of word 1 and [0, i2) of word 2.
      * This is a helper method to the dynamic programming approach of the getEditDistance method.
      *
      * @param word1 The first word
@@ -40,7 +40,7 @@ public class Utility {
     }
 
     /**
-     * Return the edit distance between two words.<br><br>
+     * Returns the edit distance between two words.<br><br>
      *
      * The <b>edit distance</b> between two words is the smallest number of
      * operations on the first word to get to the second word. The operations include:<br>

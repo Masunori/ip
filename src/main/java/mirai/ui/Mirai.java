@@ -29,7 +29,7 @@ public class Mirai {
     }
 
     /**
-     * Get a response from Mirai based on the user's text message.
+     * Gets a response from Mirai based on the user's text message.
      * @param commandLine The user's command
      * @return Mirai's response
      */
