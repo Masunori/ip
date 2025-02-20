@@ -70,6 +70,7 @@ Mirai's data is saved in the hard disk automatically after any command that alte
 
 ### Editing the data file
 Task data is saved in a `.txt` file named `mirai.txt`, at `[address of the .jar file]/data/mirai.txt`. Here, tasks are formatted as
+
 | Task type | Syntax | Example |
 | --------- | ------ | ------- |
 | Todo      | `T \| 0 \| task description` | `T \| 0 \| sleep` |
