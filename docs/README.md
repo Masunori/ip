@@ -20,7 +20,7 @@ In case you wonder about Mirai's background story, visit our story [here](https:
 3. Copy the file to the folder you want to use as the *home folder* for your Mirai. From here on, assume that you store your file at `C:/Users/Username`.
 4. Open a command terminal, then key in the following:
 ```sh
-cd C:/Users/User
+cd C:/Users/Username
 java -jar addressbook.jar
 ```
 You should see the interface that looks like below.
