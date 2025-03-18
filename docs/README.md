@@ -7,7 +7,7 @@
 
 Thanks for using Mirai, a (beautiful and intelligent assistant, as well as a) **desktop chatbot application** that helps you track your tasks and makes your life easier!
 
-Mirai is optimised for use via a **Command Line Interface** (CLI), while stil having the benefits of a **Graphical User Interface** (GUI). If you can type fast, Mirai will
+Mirai is optimised for use via a **Command Line Interface** (CLI), while still having the benefits of a **Graphical User Interface** (GUI). If you can type fast, Mirai will
 get your job done much faster than traditional GUI applications.
 
 ![Mirai chatbot application interface](Ui.png)
@@ -21,7 +21,7 @@ In case you wonder about Mirai's background story, visit our story [here](https:
 4. Open a command terminal, then key in the following:
 ```sh
 cd C:/Users/Username
-java -jar addressbook.jar
+java -jar mirai.jar
 ```
 You should see the interface that looks like below.
 
@@ -50,19 +50,19 @@ You should see the interface that looks like below.
 >  
 > - For commands that involve indexes, to know the index of a task, use the `list` command, and look until you see the index of your desired task.
 
-| Keyword | What it does | How to use it |
-| ------- | ------------ | ------------- |
-| `bye`   | Exits Mirai chatbot application. | `bye` |
-| `deadline` | Adds a deadline task into the task list. | `deadline [description] /by [datetime]` |
-| `delete` | Deletes a task from the storage with the specified index. | `delete [index]` |
-| `event` | Adds an event task into the task list. | `event [description] /from [start datetime] /to [end datetime]` |
-| `find` | Finds a task based on a word/words. Note that everything after the `find` keyword will be treated as one block.<br><br> For example, `find read book` will retrieve all tasks containing the `read book` phrase exactly. | `find [keyword(s)]` |
-| `flexfind` | Sorts all tasks based on the decreasing level of revelance to the keyword(s). Each word is treated separately.<br><br> For example `flexfind read book` will check for closeness of the task description with respect to `read` and `book` separately, so `flexfind book read` will also produce the same results, even if it does not make as much semantic meaning. | `flexfind [keyword(s)]` |
-| `help` | Lists all commands that Mirai supports. | `help` |
-| `list` | Lists all tasks in the task list. | `list` |
-| `mark` | Marks a task with a specified index as done. | `mark [index]` |
-| `todo` | Adds a to-do task into the task list. | `todo [description]` |
-| `unmark` | Marks a task with a specified index as incompleted. | `unmark [index]` |
+| Keyword | What it does                                                                                                                                                                                                                                       | How to use it |
+| ------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| ------------- |
+| `bye`   | Exits Mirai chatbot application.                                                                                                                                                                                                                   | `bye` |
+| `deadline` | Adds a deadline task into the task list.                                                                                                                                                                                                           | `deadline [description] /by [datetime]` |
+| `delete` | Deletes a task from the storage with the specified index.                                                                                                                                                                                          | `delete [index]` |
+| `event` | Adds an event task into the task list.                                                                                                                                                                                                             | `event [description] /from [start datetime] /to [end datetime]` |
+| `find` | Finds a task based on a word/words. Note that everything after the `find` keyword will be treated as one block.<br><br> For example, `find read book` will retrieve all tasks containing the `read book` phrase exactly.                           | `find [keyword(s)]` |
+| `flexfind` | Sorts all tasks based on the closeness to the keyword(s). Word ordering is not important.<br><br> For example `flexfind read book` and `flexfind book read` will also produce the same results, even if it does not make as much semantic meaning. | `flexfind [keyword(s)]` |
+| `help` | Lists all commands that Mirai supports.                                                                                                                                                                                                            | `help` |
+| `list` | Lists all tasks in the task list.                                                                                                                                                                                                                  | `list` |
+| `mark` | Marks a task with a specified index as done.                                                                                                                                                                                                       | `mark [index]` |
+| `todo` | Adds a to-do task into the task list.                                                                                                                                                                                                              | `todo [description]` |
+| `unmark` | Marks a task with a specified index as incompleted.                                                                                                                                                                                                | `unmark [index]` |
 
 # Non-command features
 ### Saving data
